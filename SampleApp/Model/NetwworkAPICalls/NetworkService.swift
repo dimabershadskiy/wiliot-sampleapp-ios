@@ -16,11 +16,11 @@ extension APIPath {
     var path:String {
         switch self{
         case .receiveAuthToken:
-            return "/test/v1/auth/token/api"
+            return "/v1/auth/token/api"
         case .registerGW(let ownerId, let gatewayId):
-            return "/test/v1/owner/\(ownerId)/gateway/\(gatewayId)/mobile"
+            return "/v1/owner/\(ownerId)/gateway/\(gatewayId)/mobile"
         case .refreshGWToken( _):
-            return "/test/v1/gateway/refresh"
+            return "/v1/gateway/refresh"
         }
     }
 }
