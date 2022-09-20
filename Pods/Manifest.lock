@@ -1,0 +1,26 @@
+PODS:
+  - CocoaAsyncSocket (7.6.5)
+  - CocoaMQTT (2.0.5):
+    - CocoaMQTT/Core (= 2.0.5)
+  - CocoaMQTT/Core (2.0.5):
+    - CocoaAsyncSocket (~> 7.6.5)
+  - JWTDecode (3.0.0)
+
+DEPENDENCIES:
+  - CocoaMQTT
+  - JWTDecode
+
+SPEC REPOS:
+  trunk:
+    - CocoaAsyncSocket
+    - CocoaMQTT
+    - JWTDecode
+
+SPEC CHECKSUMS:
+  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
+  CocoaMQTT: a39eea0119ceb0e72f071b082c3677bd6c347d89
+  JWTDecode: 82480a7173f8a811954e7e14a2b59f688ca4222a
+
+PODFILE CHECKSUM: 057c0a469d70a53141124852d74cc240e3bf9310
+
+COCOAPODS: 1.11.3
