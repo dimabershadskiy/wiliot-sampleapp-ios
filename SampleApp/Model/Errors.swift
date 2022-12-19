@@ -34,7 +34,6 @@ extension ValueReadingError: CustomStringConvertible {
         case .notFound:
             toReturn = "Not Found"
         case .invalidValue(let optionalDetails):
-
             toReturn = "Invalid value"
             if let detail = optionalDetails {
                 toReturn.append(": \(detail)")
@@ -62,16 +61,15 @@ extension BadServerResponse: CustomStringConvertible {
         switch self {
         case .badStatusCode(let code, let message):
             descriptionString = "Bad Status Code"
-            if let code = code {
+            if let code {
                 descriptionString.append(": \(code)")
             }
-            if let message = message {
+            if let message {
                 descriptionString.append(", message: \(message)")
             }
-
         case .badResponse(let message):
             descriptionString = "Bad Response"
-            if let message = message {
+            if let message {
                 descriptionString.append(", message: \(message)")
             }
         }

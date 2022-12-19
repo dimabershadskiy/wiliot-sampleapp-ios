@@ -70,61 +70,47 @@ public final class MQTTClient {
                          host: endpoint.host,
                          port: endpoint.port)
 
-        do {
-            let jwt: JWT = try decode(jwt: connectionToken) // Gateway Auth token
-            if let expDate = jwt.expiresAt {
-                let currentDate = Date()
-                let tokenExpirationSeconds = expDate.secondsFrom(anotherDate: currentDate)
-                print(" - Gateway Token: Time to expire: \(tokenExpirationSeconds) seconds")
-                if tokenExpirationSeconds < 100 {
-                    throw MQTTClientError.expiringToken
-                }
+        let jwt: JWT = try decode(jwt: connectionToken) // Gateway Auth token
+        if let expDate = jwt.expiresAt {
+            let currentDate = Date()
+            let tokenExpirationSeconds = expDate.secondsFrom(anotherDate: currentDate)
+            print(" - Gateway Token: Time to expire: \(tokenExpirationSeconds) seconds")
+            if tokenExpirationSeconds < 100 {
+                throw MQTTClientError.expiringToken
             }
-
-            guard let username = jwt.claim(name: "username").string else {
-                throw MQTTClientError.invalidTokenUsername
-            }
-
-           // let username: String = jwt.username ?? ""
-            mqtt.username = username
-            mqtt.password = connectionToken
-            mqtt.keepAlive = keepAliveSeconds
-            mqtt.autoReconnect = true
-            mqtt.autoReconnectTimeInterval = 1
-            mqtt.maxAutoReconnectTimeInterval = 10
-            mqtt.allowUntrustCACertificate = true // this is bad.
-            mqtt.cleanSession = true
-            mqtt.enableSSL = true
-            mqtt.logLevel = .off// .debug
-            mqtt.backgroundOnSocket = true
-            self.cocoaMQTTDelegate?.target = self
-            mqtt.delegate = self.cocoaMQTTDelegate
-
-        } catch {
-            throw error
         }
+
+        guard let username = jwt.claim(name: "username").string else {
+            throw MQTTClientError.invalidTokenUsername
+        }
+
+        mqtt.username = username
+        mqtt.password = connectionToken
+        mqtt.keepAlive = keepAliveSeconds
+        mqtt.autoReconnect = true
+        mqtt.autoReconnectTimeInterval = 1
+        mqtt.maxAutoReconnectTimeInterval = 10
+        mqtt.allowUntrustCACertificate = true // this is bad.
+        mqtt.cleanSession = true
+        mqtt.enableSSL = true
+        mqtt.logLevel = .off// .debug
+        mqtt.backgroundOnSocket = true
+        self.cocoaMQTTDelegate?.target = self
+        mqtt.delegate = self.cocoaMQTTDelegate
 
         self.mqtt = mqtt
     }
 
     @discardableResult
     public func start() throws -> Bool {
-        if let _ = mqtt {
-            return connectMQTT()
-//            return mqtt.connect()
-        } else {
+        if mqtt == nil {
             try prepareMQTT()
         }
-
         return connectMQTT()
     }
 
     private func connectMQTT() -> Bool {
-        guard let mqtt = self.mqtt else {
-            return false
-        }
-
-        return mqtt.connect()
+        return mqtt?.connect() ?? false
     }
 
     public func stopAndDisconnect() {
@@ -137,7 +123,7 @@ public final class MQTTClient {
 //        #if DEBUG
 //        print("+ MQTTClient TRYING sendMessage. Date: \(Date()), topic: \(topic)")
 //        #endif
-        guard let mqtt = self.mqtt else {
+        guard let mqtt else {
             throw MQTTClientError.mqttClientNotSet
         }
 
@@ -200,9 +186,6 @@ extension MQTTClient: CocoaMQTTDelegateObjectTarget {
             trace("did disconnect: \(err.debugDescription)")
             print("MQTT DISCONNECTION ERROR:\n \(error)\n")
             connectionState = "didDisconnect, Error(\(error.localizedDescription)"
-            let customError = NSError(domain: "com.MQTTCient",
-                                      code: 1,
-                                      userInfo: [NSLocalizedDescriptionKey: "MQTT connection lost with cause: \(connectionState)"])
 
             delegate?.mqttClientDidEncounterError(error)
         } else {
@@ -235,7 +218,6 @@ extension MQTTClient: CocoaMQTTDelegateObjectTarget {
         case .disconnected:
             connectionState = state.description
 
-            // stopAndDisconnect()
             delegate?.mqttClientDidDisconnect()
 
         case .connecting:

@@ -5,9 +5,9 @@ import Foundation
 import CoreLocation
 
 /// Custom codable structure that represents geographical coordinate.
-public struct Location: Codable {
-    var lat: Double
-    var lng: Double
+struct Location: Codable {
+    let lat: Double
+    let lng: Double
 
     /// Initializer of Location structure.
     ///

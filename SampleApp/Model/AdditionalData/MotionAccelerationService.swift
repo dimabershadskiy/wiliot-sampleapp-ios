@@ -20,8 +20,7 @@ extension AccelerationData {
 class MotionAccelerationService {
 
     var currentAcceleration: AccelerationData {
-        let accel = AccelerationData(acceleration)
-        return accel
+        return AccelerationData(acceleration)
     }
 
     private(set) var accelerationUpdateInterval: TimeInterval = 0.5
@@ -47,7 +46,6 @@ class MotionAccelerationService {
     }
 
     func startUpdates() throws {
-
         if !motionManager.isAccelerometerAvailable {
             throw ValueReadingError.missingRequiredValue("MotionAccelerationService accelerometer is not available")
         }
@@ -58,8 +56,8 @@ class MotionAccelerationService {
 
         motionManager.accelerometerUpdateInterval = accelerationUpdateInterval
 
-        motionManager.startAccelerometerUpdates(to: motionManagerOperationQueue) {[weak self] data, error in
-            guard let weakSelf = self else {
+        motionManager.startAccelerometerUpdates(to: motionManagerOperationQueue) { [weak self] data, error in
+            guard let self else {
                 return
             }
 
@@ -68,17 +66,7 @@ class MotionAccelerationService {
                 return
             }
 
-            guard let accData = data else {
-                weakSelf.acceleration = .init()
-                return
-            }
-
-//            #if DEBUG
-//            let timeStamp = accData.timestamp
-//            printDebug("MotionAccelerationService update timestamp: \(timeStamp)")
-//            #endif
-
-            weakSelf.acceleration = accData.acceleration
+            self.acceleration = data?.acceleration ?? .init()
         }
     }
 

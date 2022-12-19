@@ -4,7 +4,7 @@
 import Foundation
 
 /// A structure containing 3-axis acceleration data.
-public struct AccelerationData: Codable {
+struct AccelerationData: Codable {
     let x: Double
     let y: Double
     let z: Double
@@ -15,7 +15,7 @@ public struct AccelerationData: Codable {
     ///   - x: X-axis acceleration in G's.
     ///   - y: Y-axis acceleration in G's.
     ///   - z: Z-axis acceleration in G's.
-    public init(x: Double, y: Double, z: Double) {
+    init(x: Double, y: Double, z: Double) {
         self.x = x
         self.y = y
         self.z = z

@@ -17,8 +17,7 @@ extension Data {
 
     func getManufacturerIdString() -> String {
         let manufactureID = UInt16(self[0]) + UInt16(self[1]) << 8
-        let manufactureIDString = String(format: "%04X", manufactureID)
-        return manufactureIDString
+        return String(format: "%04X", manufactureID)
     }
 }
 
@@ -44,7 +43,6 @@ public extension Data {
 extension Data {
     static func dummyDataOfLength(_ count: Int) -> Data {
         let dummy = [UInt8](repeating: 0x0, count: count)
-        let dummyData = Self(bytes: dummy, count: count)
-        return dummyData
+        return Self(bytes: dummy, count: count)
     }
 }

@@ -36,7 +36,6 @@ class NetworkService {
     }
 
     private func postRequestWithToken(_ token: String, isBearer: Bool = true, path: String) -> URLRequest {
-
         let url = URL(string: path)!
 
         var request = URLRequest(url: url)
@@ -46,33 +45,27 @@ class NetworkService {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("UTF-8", forHTTPHeaderField: "Encoding")
         if !token.isEmpty {
-            if isBearer {
-                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-            } else {
-                request.setValue("\(token)", forHTTPHeaderField: "Authorization")
-            }
+            let value = isBearer ? "Bearer \(token)" : token
+            request.setValue(value, forHTTPHeaderField: "Authorization")
         }
 
         return request
     }
 
     private func handleBadResponseScenario(error: Error?, data: Data?, response: URLResponse?) -> Error? {
-        if let anError = error {
-
-            return anError
+        if let error {
+            return error
         }
 
-        guard let response = response,
-              let data = data,
+        guard let response,
+              let data,
               let httpResponse = response as? HTTPURLResponse else {
             return ValueReadingError.invalidValue("Wrong response received")
-
         }
 
         if httpResponse.statusCode != 200 {
             print("Status Code: \(httpResponse.statusCode) for \(response.url!.path)")
             return BadServerResponse.badStatusCode(httpResponse.statusCode, "Unhandled server response")
-
         }
 
         if data.isEmpty {
@@ -88,32 +81,28 @@ class NetworkService {
 extension NetworkService: AuthTokenRequester {
 
     func getAuthToken(completion: @escaping ((AuthTokenResult) -> Void)) {
-
         let path = APIPath.receiveAuthToken.path
 
         let request = postRequestWithToken(appKey, isBearer: false, path: oauthBase + path)
         print("getAuthToken: \(request.url!)")
-        let authTokenRequestTask = URLSession.shared.dataTask(with: request) {[weak self] data, urlResponse, error in
-
-            guard let self = self else { return }
+        let authTokenRequestTask = URLSession.shared.dataTask(with: request) { [weak self] data, urlResponse, error in
+            guard let self else { return }
 
             if let error = self.handleBadResponseScenario(error: error, data: data, response: urlResponse) {
-                completion( .failure(error))
+                completion(.failure(error))
                 return
             }
 
             guard let responseData = data else {
-                completion( .failure(ValueReadingError.missingRequiredValue("No Auth Token response data")))
+                completion(.failure(ValueReadingError.missingRequiredValue("No Auth Token response data")))
                 return
             }
 
             do {
-                // let dict = try JSONSerialization.jsonObject(with: responseData)
-
                 let authData = try JSONDecoder().decode(FusionAuthResponseModel.self, from: responseData)
-                completion( .success(authData.accessToken))
+                completion(.success(authData.accessToken))
             } catch {
-                completion( .failure(error))
+                completion(.failure(error))
             }
         }
 
@@ -139,11 +128,10 @@ extension NetworkService: GatewayRegistrator {
             return
         }
 
-        print("Register gateway Request: \(request.url!.absoluteString), \n Header:\(request.allHTTPHeaderFields), \nbody: \(request.httpBody)")
+        print("Register gateway Request: \(request.url!.absoluteString), \n Header:\(String(describing: request.allHTTPHeaderFields)), \nbody: \(String(describing: request.httpBody))")
 
         let registerTask = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-
-            guard let self = self else {
+            guard let self else {
                 return
             }
 
@@ -153,7 +141,7 @@ extension NetworkService: GatewayRegistrator {
             }
 
             guard let responseData = data else {
-                completion( .failure(ValueReadingError.invalidValue("Wrong response received") ) )
+                completion(.failure(ValueReadingError.invalidValue("Wrong response received")))
                 return
             }
 
@@ -161,13 +149,13 @@ extension NetworkService: GatewayRegistrator {
                 let tokensInfo = try JSONSerialization.jsonObject(with: responseData)
                 guard let tokensDictContainer = tokensInfo as? [String: Any],
                       let tokensDict = tokensDictContainer["data"] as? [String: Any] else {
-                    completion( .failure(ValueReadingError.invalidValue("Wrong response format.") ) )
+                    completion(.failure(ValueReadingError.invalidValue("Wrong response format.")))
                     return
                 }
 
                 self.handleTokensResponse(tokensDict, completion: completion)
             } catch {
-                completion( .failure(error))
+                completion(.failure(error))
             }
 
         }
@@ -176,16 +164,13 @@ extension NetworkService: GatewayRegistrator {
     }
 
     func refreshGatewayTokensWith(refreshToken: String, completion: @escaping ((TokensResult) -> Void)) {
-
         var path = APIPath.refreshGWToken(refresh_token: refreshToken).path
         path.append("?refresh_token=\(refreshToken)")
 
         let request = postRequestWithToken("", path: path)
 
-        let refreshTask =
-        URLSession.shared.dataTask(with: request) {[weak self] data, urlResponse, error in
-
-            guard let self = self else { return }
+        let refreshTask = URLSession.shared.dataTask(with: request) { [weak self] data, urlResponse, error in
+            guard let self else { return }
 
             if let error = self.handleBadResponseScenario(error: error,
                                                           data: data,
@@ -195,20 +180,19 @@ extension NetworkService: GatewayRegistrator {
             }
 
             guard let responseData = data else {
-                completion( .failure(ValueReadingError.missingRequiredValue("No Response Data")))
+                completion(.failure(ValueReadingError.missingRequiredValue("No Response Data")))
                 return
             }
             do {
                 let tokensInfo = try JSONSerialization.jsonObject(with: responseData)
                 guard let tokensDict = tokensInfo as? [String: String] else {
-                    completion( .failure(ValueReadingError.invalidValue("Wrong response format.") ) )
+                    completion(.failure(ValueReadingError.invalidValue("Wrong response format.")))
                     return
                 }
 
                 self.handleTokensResponse(tokensDict, completion: completion)
-
             } catch {
-                completion( .failure(error))
+                completion(.failure(error))
             }
         }
 
@@ -216,23 +200,16 @@ extension NetworkService: GatewayRegistrator {
     }
 
     private func handleTokensResponse(_ tokensData: [String: Any], completion: @escaping ((TokensResult) -> Void)) {
-            // handle success response
-            var tokens = GatewayTokens()
+        // handle success response
+        let authToken = tokensData[kGatewayAuthTokenKey] as? String
+        let refresh = tokensData[kGatewayRefreshTokenKey] as? String
+        let tokens = GatewayTokens(authToken: authToken, refresh: refresh)
+        if tokens.isEmpty {
+            completion(.failure(ValueReadingError.missingRequiredValue("No required tokens to start connection")))
+            return
+        }
 
-            if let authToken = tokensData[kGatewayAuthTokenKey] as? String {
-                tokens.setAuth(authToken)
-            }
-
-            if let refresh = tokensData[kGatewayRefreshTokenKey] as? String {
-                tokens.setRefresh(refresh)
-            }
-
-            if tokens.isEmpty {
-                completion(.failure(ValueReadingError.missingRequiredValue("No required tokens to start connection") ) )
-                return
-            }
-
-            completion( .success(tokens))
+        completion( .success(tokens))
     }
 
 }

@@ -63,6 +63,7 @@ DerivedData/
 xcuserdata/
 xcusershareddata/
 *.xcworkspace/xcuserdata/
+*xcshareddata
 
 ## Other
 *.moved-aside

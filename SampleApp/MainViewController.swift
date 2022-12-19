@@ -19,7 +19,6 @@ class MainViewController: UIViewController {
         super.loadView()
 
         if model == nil {
-
             let model = Model()
 
             model.statusPublisher
@@ -31,14 +30,14 @@ class MainViewController: UIViewController {
 
             model.connectionPublisher
                 .receive(on: DispatchQueue.main)
-                .sink {[weak self] isConnected in
+                .sink { [weak self] isConnected in
                     self?.handleConnectionStatus(isConnected)
                 }
                 .store(in: &cancellables)
 
             model.bleActivityPublisher
                 .receive(on: DispatchQueue.main)
-                .sink(receiveValue: {[weak self] floatValue in
+                .sink(receiveValue: { [weak self] floatValue in
                     self?.handleBLEactivityValue(floatValue)
                 })
                 .store(in: &cancellables)
@@ -70,11 +69,6 @@ class MainViewController: UIViewController {
         model?.checkAndRequestSystemPermissions()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-    }
-
     private func handleConnectionStatus(_ isConnected: Bool) {
         if isConnected {
             networkIconIcon?.image = UIImage(systemName: "icloud.and.arrow.up.fill")
@@ -103,15 +97,13 @@ class MainViewController: UIViewController {
     }
 
     private func proceedWithBLEandNetworking() {
-        model?.prepare {[weak self] in
-            guard let self = self,
-                  let aModel = self.model else {
-                    return
-                }
+        model?.prepare { [weak self] in
+            guard let self, let model = self.model else {
+                return
+            }
 
-            if aModel.canStart() {
-                aModel.start()
-
+            if model.canStart() {
+                model.start()
             }
         }
     }
@@ -125,7 +117,7 @@ class MainViewController: UIViewController {
         } completion: {  _ in
             UIView.animate(withDuration: 0.2, delay: 0.1, animations: {[unowned self] in
                 networkIconIcon?.alpha = 1.0
-            }, completion: nil )
+            }, completion: nil)
 
         }
     }

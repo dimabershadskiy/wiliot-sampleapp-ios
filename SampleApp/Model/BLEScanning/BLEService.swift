@@ -166,7 +166,7 @@ class BLEService {
                     return
                 }
 
-                weakSelf.cleanupQueue.addOperation {[weak self] in
+                weakSelf.cleanupQueue.addOperation { [weak self] in
                     self?.sideInfoIDs[last4BytesId] = nil
                 }
             }
@@ -210,9 +210,8 @@ extension BLEService: BLECentralDelegateTarget {
         #if targetEnvironment(simulator)
         return
         #endif
-        let state = central.state
 
-        switch state {
+        switch central.state {
         case .unknown:
             print("BLEservice CentralManagerState: 'Unknown'")
         case .resetting:
@@ -238,10 +237,6 @@ extension BLEService: BLECentralDelegateTarget {
     }
 
     fileprivate func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
-//        if advertisementData["kCBAdvDataLocalName"] != nil {
-//            return
-//        }
-
         if (advertisementData["kCBAdvDataIsConnectable"] as? Int) ?? 0 != 0 {
             return
         }
