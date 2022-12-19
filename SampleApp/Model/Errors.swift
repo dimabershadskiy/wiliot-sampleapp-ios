@@ -1,13 +1,12 @@
-
 import Foundation
 
-enum CodingError:Error {
+enum CodingError: Error {
     case decodingFailed(Error?)
     case encodingFailed(Error?)
 }
 
 extension CodingError {
-    var description:String {
+    var description: String {
         switch self {
         case .decodingFailed(let optionalError):
             return "Decoding Failed. Error: \(optionalError?.localizedDescription ?? "Unknown")"
@@ -17,26 +16,25 @@ extension CodingError {
     }
 }
 
-
-enum ValueReadingError:LocalizedError {
+enum ValueReadingError: LocalizedError {
     case notFound
     case invalidValue(String? = nil)
     case missingRequiredValue(String? = nil)
-    
+
     var errorDescription: String? {
         return description
     }
 }
 
-extension ValueReadingError : CustomStringConvertible {
+extension ValueReadingError: CustomStringConvertible {
     var description: String {
         var toReturn = ""
-        
+
         switch self {
         case .notFound:
             toReturn = "Not Found"
         case .invalidValue(let optionalDetails):
-            
+
             toReturn = "Invalid value"
             if let detail = optionalDetails {
                 toReturn.append(": \(detail)")
@@ -47,21 +45,20 @@ extension ValueReadingError : CustomStringConvertible {
                 toReturn.append(": \(detail)")
             }
         }
-        
+
         return toReturn
     }
 }
 
-
-enum BadServerResponse:LocalizedError {
+enum BadServerResponse: LocalizedError {
     case badStatusCode(Int? = nil, String? = nil)
     case badResponse(String? = nil)
 }
 
-extension BadServerResponse:CustomStringConvertible {
+extension BadServerResponse: CustomStringConvertible {
     var description: String {
         var descriptionString = ""
-        
+
         switch self {
         case .badStatusCode(let code, let message):
             descriptionString = "Bad Status Code"
@@ -71,14 +68,14 @@ extension BadServerResponse:CustomStringConvertible {
             if let message = message {
                 descriptionString.append(", message: \(message)")
             }
-            
-        case .badResponse(let message) :
+
+        case .badResponse(let message):
             descriptionString = "Bad Response"
             if let message = message {
                 descriptionString.append(", message: \(message)")
             }
         }
-        
+
         return descriptionString
     }
 }

@@ -1,7 +1,6 @@
-
 import Foundation
 
-//MARK: -
+// MARK: -
 
 struct FusionAuthResponseModel: Codable {
     var accessToken: String
@@ -10,7 +9,7 @@ struct FusionAuthResponseModel: Codable {
     var refreshToken: String?
     var tokenType: String?
     var userId: String?
-    var scope:String?
+    var scope: String?
 
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
@@ -23,31 +22,31 @@ struct FusionAuthResponseModel: Codable {
     }
 }
 
-//MARK: -
-struct GatewayTokens:Codable {
-    
-    private(set)var auth:String?
-    private(set)var refresh:String?
-    
-    var isEmpty:Bool {
+// MARK: -
+struct GatewayTokens: Codable {
+
+    private(set)var auth: String?
+    private(set)var refresh: String?
+
+    var isEmpty: Bool {
         return auth == nil && refresh == nil
     }
-    
-    var isFull:Bool {
+
+    var isFull: Bool {
         auth != nil && refresh != nil
     }
-    
-    mutating func setAuth(_ token:String) {
+
+    mutating func setAuth(_ token: String) {
         auth = token
     }
-    
-    mutating func setRefresh(_ token:String) {
+
+    mutating func setRefresh(_ token: String) {
         refresh = token
     }
 }
 
 extension GatewayTokens {
-    init(authToken:String) {
+    init(authToken: String) {
         self.auth = authToken
     }
 }
