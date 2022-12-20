@@ -11,7 +11,7 @@ class iBeacon {
         static let identifier = "com.wiliotbeacon.identifier"
     }
 
-    var clBeaconRegion: CLBeaconRegion {
+    lazy var clBeaconRegion: CLBeaconRegion = {
         let uid = UUID(uuidString: K.uid)!
         let identifier = K.identifier
         let region = CLBeaconRegion(uuid: uid, identifier: identifier)
@@ -19,7 +19,7 @@ class iBeacon {
         region.notifyOnExit = true
         region.notifyOnEntry = true
         return region
-    }
+    }()
 
     var targetUUID: UUID {
         return clBeaconRegion.uuid

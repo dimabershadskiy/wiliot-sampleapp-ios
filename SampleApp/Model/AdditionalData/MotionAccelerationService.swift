@@ -61,8 +61,8 @@ class MotionAccelerationService {
                 return
             }
 
-            if let accError = error {
-                print("Acceleration Data Error: \(accError)")
+            if let error {
+                print("Acceleration Data Error: \(error)")
                 return
             }
 
