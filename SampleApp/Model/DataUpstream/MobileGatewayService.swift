@@ -115,7 +115,7 @@ class MobileGatewayService {
                                          endpoint: MQTTEndpoint.defaultEndpoint,
                                          delegate: self)
             let started = try client.start()
-            self.mqttClient = client
+            mqttClient = client
             return started
         } catch {
             isConnecting = false
@@ -184,24 +184,21 @@ extension MobileGatewayService: TagPacketsSender {
 extension MobileGatewayService: MQTTClientDelegate {
     func mqttClientDidConnect() {
         isConnecting = false
-        self.isConnected = true
+        isConnected = true
         didConnectCompletion?(true)
     }
 
     func mqttClientDidDisconnect() {
         isConnecting = false
-        self.isConnected = false
-        self.isConnected = false
-        self.mqttClient = nil
+        isConnected = false
+        mqttClient = nil
         didStopCompletion?()
     }
 
     func mqttClientDidEncounterError(_ error: Error) {
         print("MobileGatewayService mqttClientDidEncounterError() Error:\(error)")
         isConnecting = false
-        self.isConnected = false
-        self.isConnected = false
-
+        isConnected = false
     }
 }
 

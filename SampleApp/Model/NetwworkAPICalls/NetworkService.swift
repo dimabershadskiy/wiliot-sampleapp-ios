@@ -209,7 +209,7 @@ extension NetworkService: GatewayRegistrator {
             return
         }
 
-        completion( .success(tokens))
+        completion(.success(tokens))
     }
 
 }
