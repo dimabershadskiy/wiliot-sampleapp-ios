@@ -10,57 +10,56 @@ import CoreLocation
 import CoreBluetooth
 import Combine
 
-class Permissions:ObservableObject {
-    var isLocationPermissionsErrorNeedManualSetup:Bool = false {
+class Permissions: ObservableObject {
+    var isLocationPermissionsErrorNeedManualSetup: Bool = false {
         willSet {
             objectWillChange.send()
         }
     }
-    
-    var locationAlwaysGranded:Bool = false
-    var locationWhenInUseGranted:Bool = false
-    var locationCanBeUsed:Bool = false {
+
+    var locationAlwaysGranded: Bool = false
+    var locationWhenInUseGranted: Bool = false
+    var locationCanBeUsed: Bool = false {
         willSet {
             objectWillChange.send()
         }
     }
-    
-    @Published var bluetoothCanBeUsed:Bool = false
-    
+
+    @Published var bluetoothCanBeUsed: Bool = false
+
     /// to be binded in the toggling the gateway mode
-    @Published private(set) var gatewayPermissionsGranted:Bool = false
-    
-    var pLocationCanBeUsed:Bool {
+    @Published private(set) var gatewayPermissionsGranted: Bool = false
+
+    var pLocationCanBeUsed: Bool {
         locationAlwaysGranded || locationWhenInUseGranted
     }
-    
-    private lazy var cbManager:CBCentralManager = CBCentralManager()
-    private lazy var locationManager:CLLocationManager = CLLocationManager()
-    
-    private lazy var cbDelegate:CBCentralManagerDelegateObject = CBCentralManagerDelegateObject()
-    private lazy var locDelegate:CBLocationManagerDelegateObject = CBLocationManagerDelegateObject()
-    
-    
+
+    private lazy var cbManager: CBCentralManager = CBCentralManager()
+    private lazy var locationManager: CLLocationManager = CLLocationManager()
+
+    private lazy var cbDelegate: CBCentralManagerDelegateObject = CBCentralManagerDelegateObject()
+    private lazy var locDelegate: CBLocationManagerDelegateObject = CBLocationManagerDelegateObject()
+
     init() {
-        
+
         checkAuthStatus()
     }
-    
-    //MARK: - Initialization
-    convenience init(bluetoothManager:CBCentralManager? = nil, locationManager:CLLocationManager? = nil) {
+
+    // MARK: - Initialization
+    convenience init(bluetoothManager: CBCentralManager? = nil, locationManager: CLLocationManager? = nil) {
         self.init()
-        
+
         if let bluetoothManager = bluetoothManager {
             self.cbManager = bluetoothManager
         }
-        
+
         if let locManager = locationManager {
             self.locationManager = locManager
         }
     }
-    //MARK: -
+    // MARK: -
     func checkAuthStatus() {
-        
+
         #if targetEnvironment(simulator)
         locationAlwaysGranded = true
         locationWhenInUseGranted = true
@@ -70,11 +69,11 @@ class Permissions:ObservableObject {
         updateGatewayPermissionsGranted()
         return
         #endif
-        
+
         let status = locationManager.authorizationStatus
-        
+
         switch status {
-            
+
         case .notDetermined:
             locationAlwaysGranded = false
             locationWhenInUseGranted = false
@@ -93,12 +92,11 @@ class Permissions:ObservableObject {
             locationAlwaysGranded = false
             locationWhenInUseGranted = false
         }
-        
+
         locationCanBeUsed = pLocationCanBeUsed
-        
-        
+
         let btState = CBCentralManager.authorization
-        
+
         switch btState {
         case .notDetermined:
             bluetoothCanBeUsed = false
@@ -111,20 +109,19 @@ class Permissions:ObservableObject {
         @unknown default:
             fatalError()
         }
-        
+
         updateGatewayPermissionsGranted()
     }
-    
+
     func requestBluetoothAuth() {
         cbDelegate.delegate = self
-        
+
         cbManager.delegate = cbDelegate
         cbManager.scanForPeripherals(withServices: nil)
     }
-    
+
     func requestLocationAuth() {
-        
-        
+
         let status = locationManager.authorizationStatus
         isLocationPermissionsErrorNeedManualSetup = false
         switch status {
@@ -146,14 +143,14 @@ class Permissions:ObservableObject {
             fatalError()
         }
     }
-    
+
     private func updateGatewayPermissionsGranted() {
         gatewayPermissionsGranted = locationCanBeUsed && bluetoothCanBeUsed
-        
+
     }
 }
 
-extension Permissions:CBCentralManagerStateDelegate {
+extension Permissions: CBCentralManagerStateDelegate {
     func bluetoothDidChangeAuthState(_ state: CBManagerAuthorization) {
         switch state {
         case .notDetermined:
@@ -167,14 +164,14 @@ extension Permissions:CBCentralManagerStateDelegate {
         @unknown default:
             fatalError()
         }
-        
+
         updateGatewayPermissionsGranted()
     }
 }
 
-extension Permissions:CBLocationManagerStateDelegate {
+extension Permissions: CBLocationManagerStateDelegate {
     func locationManagerAuthStateDidChange(_ state: CLAuthorizationStatus) {
-        
+
         switch state {
         case .notDetermined:
             locationWhenInUseGranted = false
@@ -195,49 +192,47 @@ extension Permissions:CBLocationManagerStateDelegate {
         @unknown default:
             fatalError()
         }
-        
+
         locationCanBeUsed = locationWhenInUseGranted || locationAlwaysGranded
-        
+
         updateGatewayPermissionsGranted()
     }
 }
 
-//MARK: - BLE Delegate
-protocol CBCentralManagerStateDelegate:AnyObject {
-    func bluetoothDidChangeAuthState(_ state:CBManagerAuthorization)
+// MARK: - BLE Delegate
+protocol CBCentralManagerStateDelegate: AnyObject {
+    func bluetoothDidChangeAuthState(_ state: CBManagerAuthorization)
 }
 
-@objc class CBCentralManagerDelegateObject:NSObject {
-    weak var delegate:CBCentralManagerStateDelegate?
+@objc class CBCentralManagerDelegateObject: NSObject {
+    weak var delegate: CBCentralManagerStateDelegate?
 }
 
-extension CBCentralManagerDelegateObject : CBCentralManagerDelegate {
-    
-    
+extension CBCentralManagerDelegateObject: CBCentralManagerDelegate {
+
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        
+
         let overallState = CBCentralManager.authorization
         delegate?.bluetoothDidChangeAuthState(overallState)
     }
-    
-    func centralManager(_ central: CBCentralManager, willRestoreState dict: [String : Any]) {
-        let uids:[CBUUID] = (dict[CBCentralManagerRestoredStateScanServicesKey] as? [CBUUID]) ?? [CBUUID]()
+
+    func centralManager(_ central: CBCentralManager, willRestoreState dict: [String: Any]) {
+        let uids: [CBUUID] = (dict[CBCentralManagerRestoredStateScanServicesKey] as? [CBUUID]) ?? [CBUUID]()
         print("Permissions centralManager willRestoreState -> uids: \(uids)")
     }
 }
 
-//MARK: - LocationManager Delegate
-protocol CBLocationManagerStateDelegate:AnyObject {
-    func locationManagerAuthStateDidChange(_ state:CLAuthorizationStatus)
+// MARK: - LocationManager Delegate
+protocol CBLocationManagerStateDelegate: AnyObject {
+    func locationManagerAuthStateDidChange(_ state: CLAuthorizationStatus)
 }
 
-@objc class CBLocationManagerDelegateObject:NSObject {
-    weak var delegate:CBLocationManagerStateDelegate?
+@objc class CBLocationManagerDelegateObject: NSObject {
+    weak var delegate: CBLocationManagerStateDelegate?
 }
 
-extension CBLocationManagerDelegateObject:CLLocationManagerDelegate {
+extension CBLocationManagerDelegateObject: CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         delegate?.locationManagerAuthStateDidChange(manager.authorizationStatus)
     }
 }
-

@@ -1,7 +1,6 @@
 //
 //  Data+Extension.swift
 
-
 import Foundation
 
 extension Data {
@@ -23,7 +22,6 @@ extension Data {
     }
 }
 
-
 public extension Data {
     init?(hexString: String) {
         let len = hexString.count / 2
@@ -44,8 +42,8 @@ public extension Data {
 }
 
 extension Data {
-    static func dummyDataOfLength(_ count:Int) -> Data {
-        let dummy = Array<UInt8>(repeating: 0x0, count: count)
+    static func dummyDataOfLength(_ count: Int) -> Data {
+        let dummy = [UInt8](repeating: 0x0, count: count)
         let dummyData = Self(bytes: dummy, count: count)
         return dummyData
     }

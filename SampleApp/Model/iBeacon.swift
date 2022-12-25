@@ -1,7 +1,6 @@
 //
 //  iBeacon.swift
 
-
 import Foundation
 import CoreLocation
 
@@ -22,7 +21,7 @@ class iBeacon {
         return region
     }
 
-    var targetUUID:UUID {
+    var targetUUID: UUID {
         return clBeaconRegion.uuid
     }
 }

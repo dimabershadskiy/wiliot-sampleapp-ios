@@ -1,7 +1,6 @@
 //
 //  AccelerationData.swift
 
-
 import Foundation
 
 /// A structure containing 3-axis acceleration data.

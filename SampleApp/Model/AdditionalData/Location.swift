@@ -18,14 +18,14 @@ public struct Location: Codable {
         lat = latitude
         lng = longtitude
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case lat
         case lng
     }
 }
 
-//MARK: - extension for encoding
+// MARK: - extension for encoding
 extension Location {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
@@ -41,7 +41,7 @@ fileprivate extension Double {
 }
 
 extension Location {
-    init?(geoLocation clLocation:CLLocation?) {
+    init?(geoLocation clLocation: CLLocation?) {
         guard let loc = clLocation else {
             return nil
         }
