@@ -41,7 +41,6 @@ class Permissions: ObservableObject {
     private lazy var locDelegate: CBLocationManagerDelegateObject = CBLocationManagerDelegateObject()
 
     init() {
-
         checkAuthStatus()
     }
 
@@ -49,14 +48,15 @@ class Permissions: ObservableObject {
     convenience init(bluetoothManager: CBCentralManager? = nil, locationManager: CLLocationManager? = nil) {
         self.init()
 
-        if let bluetoothManager = bluetoothManager {
+        if let bluetoothManager {
             self.cbManager = bluetoothManager
         }
 
-        if let locManager = locationManager {
-            self.locationManager = locManager
+        if let locationManager {
+            self.locationManager = locationManager
         }
     }
+
     // MARK: -
     func checkAuthStatus() {
 
@@ -70,10 +70,7 @@ class Permissions: ObservableObject {
         return
         #endif
 
-        let status = locationManager.authorizationStatus
-
-        switch status {
-
+        switch locationManager.authorizationStatus {
         case .notDetermined:
             locationAlwaysGranded = false
             locationWhenInUseGranted = false
@@ -95,9 +92,7 @@ class Permissions: ObservableObject {
 
         locationCanBeUsed = pLocationCanBeUsed
 
-        let btState = CBCentralManager.authorization
-
-        switch btState {
+        switch CBCentralManager.authorization {
         case .notDetermined:
             bluetoothCanBeUsed = false
         case .restricted:
@@ -121,7 +116,6 @@ class Permissions: ObservableObject {
     }
 
     func requestLocationAuth() {
-
         let status = locationManager.authorizationStatus
         isLocationPermissionsErrorNeedManualSetup = false
         switch status {
@@ -146,7 +140,6 @@ class Permissions: ObservableObject {
 
     private func updateGatewayPermissionsGranted() {
         gatewayPermissionsGranted = locationCanBeUsed && bluetoothCanBeUsed
-
     }
 }
 
@@ -171,7 +164,6 @@ extension Permissions: CBCentralManagerStateDelegate {
 
 extension Permissions: CBLocationManagerStateDelegate {
     func locationManagerAuthStateDidChange(_ state: CLAuthorizationStatus) {
-
         switch state {
         case .notDetermined:
             locationWhenInUseGranted = false
@@ -211,7 +203,6 @@ protocol CBCentralManagerStateDelegate: AnyObject {
 extension CBCentralManagerDelegateObject: CBCentralManagerDelegate {
 
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-
         let overallState = CBCentralManager.authorization
         delegate?.bluetoothDidChangeAuthState(overallState)
     }

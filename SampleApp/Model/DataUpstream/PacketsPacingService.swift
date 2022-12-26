@@ -16,7 +16,6 @@ extension WeakObject: TagPacketsSender where T: TagPacketsSender {
 // input
 protocol PacketsPacing {
     func receivePacketsByUUID(_ pacingPackets: [UUID: TagPacketData])
-//    func setUUIDToExternalTagIdCorrespondence(_ info:[String:UUID])
 }
 
 class PacketsPacingService {
@@ -27,7 +26,7 @@ class PacketsPacingService {
     /// default value is 10 seconds
     private(set) var pacingTimeoutSeconds: TimeInterval = 10
     private lazy var packetsStore: [UUID: TagPacketData] = [:]
-    private lazy var externalTagID_to_UUIDMap: [String: [UUID]] = [:]
+    private lazy var uuidsByExternalTagId: [String: [UUID]] = [:]
     var firstFireDate: Date?
 
     init(with tagPacketsSender: TagPacketsSender) {
@@ -44,31 +43,25 @@ class PacketsPacingService {
 
     /// timeout has limit 0-255 seconds. 0 timeout has no effect, the pacing will not start. Default Value is 10 seconds
     func startPacingWithTimeout(_ timeout: UInt8 = 10) {
-
         if timeout < 1 {
             return
         }
 
-        if let _ = pacingTimer {
-            stopPacingTimer()
-        }
+        stopPacingTimer()
 
         let timer = DispatchSource.makeTimerSource()
         timer.schedule(deadline: .now() + .seconds(Int(timeout)),
                        repeating: .seconds( Int(timeout)),
                        leeway: .milliseconds(100))
 
-        timer.setEventHandler(handler: {[weak self] in self?.pacingTimerFire() })
+        timer.setEventHandler(handler: { [weak self] in self?.pacingTimerFire() })
         self.pacingTimer = timer
         timer.resume()
     }
 
     func stopPacingTimer() {
-        if let timer = pacingTimer {
-            timer.cancel()
-        }
-
-        self.pacingTimer = nil
+        pacingTimer?.cancel()
+        pacingTimer = nil
     }
 
     func cleanCache() {
@@ -76,7 +69,6 @@ class PacketsPacingService {
     }
 
     private func pacingTimerFire() {
-
         clearOldPacketsIfFound()
         let packets = preparePacketsToSend()
 
@@ -88,19 +80,14 @@ class PacketsPacingService {
     }
 
     private func preparePacketsToSend() -> [TagPacketData] {
-
-        let storeSnapshot = packetsStore
-        let mappingSnapshot = externalTagID_to_UUIDMap
-
-        let currentDate = Date()
-
-        guard let startDate = Calendar.current.date(byAdding: .second, value: -Int(pacingTimeoutSeconds), to: currentDate)
+        guard let startDate = Calendar.current.date(byAdding: .second, value: -Int(pacingTimeoutSeconds), to: Date())
             else {
             return []
         }
 
         let targetTime = startDate.milisecondsFrom1970()
 
+        let storeSnapshot = packetsStore
         let filteredElements: [UUID: TagPacketData] = storeSnapshot.filter { (_, packet) in
             return packet.timestamp > targetTime
         }
@@ -109,19 +96,14 @@ class PacketsPacingService {
 
         var pairsByExtId: [String: [TagPacketData]] = [:]
 
-        for (aUUID, tagPacketData) in filteredElements {
+        let mappingSnapshot = uuidsByExternalTagId
+        for (uuid, tagPacketData) in filteredElements {
             if let mappingPair = mappingSnapshot.first(where: { (_, uuids) in
-                uuids.contains(aUUID)
+                uuids.contains(uuid)
             }) {
-
                 let extTagIdKey = mappingPair.key
-
-                if let existingArray = pairsByExtId[extTagIdKey] {
-                    let newArray = existingArray + [tagPacketData]
-                    pairsByExtId[extTagIdKey] = newArray
-                } else {
-                    pairsByExtId[extTagIdKey] = [tagPacketData]
-                }
+                let existingArray = pairsByExtId[extTagIdKey, default: []]
+                pairsByExtId[extTagIdKey] = existingArray + [tagPacketData]
             } else {
                 // no External Tag Id for current TagPackedData
                 toReturn.append(tagPacketData)
@@ -129,7 +111,6 @@ class PacketsPacingService {
         }
 
         if !pairsByExtId.isEmpty {
-
             if let unknowns = pairsByExtId["unknown"] {
                 toReturn.append(contentsOf: unknowns)
             }
@@ -137,7 +118,6 @@ class PacketsPacingService {
             pairsByExtId["unknown"] = nil
 
             for tagPacketDatas in pairsByExtId.values {
-
                 let sortedByTimestamp = tagPacketDatas.sorted(by: {$0.timestamp < $1.timestamp})
                 let latestTagPacketData = sortedByTimestamp.last
 
@@ -156,10 +136,7 @@ class PacketsPacingService {
     }
 
     private func clearOldPacketsIfFound() {
-
-        let currentDate = Date()
-
-        guard let hourAgoDate = Calendar.current.date(byAdding: .hour, value: -1, to: currentDate) else {
+        guard let hourAgoDate = Calendar.current.date(byAdding: .hour, value: -1, to: Date()) else {
             return
         }
 
@@ -169,12 +146,9 @@ class PacketsPacingService {
             tagPacket.timestamp <= hourAgoIntervalMSEC
         }
 
-        if filtered.count > 0 {
-            for aKey in filtered.keys {
-                packetsStore[aKey] = nil
-            }
+        filtered.keys.forEach {
+            self.packetsStore[$0] = nil
         }
-
     }
 }
 
@@ -182,21 +156,9 @@ class PacketsPacingService {
 extension PacketsPacingService: PacketsPacing {
 
     func receivePacketsByUUID(_ pacingPackets: [UUID: TagPacketData]) {
-
         for (uuid, tagPacketData) in pacingPackets {
             packetsStore[uuid] = tagPacketData
         }
     }
 
-//    func setUUIDToExternalTagIdCorrespondence(_ info:[String:UUID]) {
-//        for ( tagExternalId, aUUID) in info {
-//            if let existingData = externalTagID_to_UUIDMap[tagExternalId] {
-//                let updated = existingData + [aUUID]
-//                externalTagID_to_UUIDMap[tagExternalId] = updated
-//            }
-//            else {
-//                externalTagID_to_UUIDMap[tagExternalId] = [aUUID]
-//            }
-//        }
-//    }
 }

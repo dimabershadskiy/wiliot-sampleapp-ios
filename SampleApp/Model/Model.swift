@@ -8,11 +8,7 @@ private let kOwnerIdKey = "owner_id"
 
 @objc class Model: NSObject {
 
-    lazy var permissions: Permissions = {
-
-        let permissionsObj = Permissions()
-        return permissionsObj
-    }()
+    lazy var permissions: Permissions = Permissions()
 
     var permissionsPublisher: AnyPublisher<Bool, Never> {
         _permissionsPublisher.eraseToAnyPublisher()
@@ -58,24 +54,22 @@ private let kOwnerIdKey = "owner_id"
 
     func prepare(completion: @escaping (() -> Void)) {
         if gatewayService == nil {
-
-            let netService = NetworkService(appKey: appToken,
-                                            ownerId: ownerId)
+            let netService = NetworkService(appKey: appToken, ownerId: ownerId)
 
             let gwService = MobileGatewayService(ownerId: ownerId,
                                                  authTokenRequester: netService,
                                                  gatewayRegistrator: netService)
 
-            gwService.didConnectCompletion = {[weak self] connected in
+            gwService.didConnectCompletion = { [weak self] connected in
                 self?._mqttConnectionPublisher.send(connected)
             }
 
-            gwService.didStopCompletion = {[weak self] in
+            gwService.didStopCompletion = { [weak self] in
                 self?._mqttConnectionPublisher.send(false)
             }
 
-            gwService.authTokenCallback = {[weak self] optionalError in
-                guard let self = self else {
+            gwService.authTokenCallback = { [weak self] optionalError in
+                guard let self else {
                     return
                 }
 
@@ -95,10 +89,7 @@ private let kOwnerIdKey = "owner_id"
     }
 
     func canStart() -> Bool {
-        if permissions.gatewayPermissionsGranted && !appToken.isEmpty && !ownerId.isEmpty && self.gatewayService?.authToken != nil {
-            return true
-        }
-        return false
+        return permissions.gatewayPermissionsGranted && !appToken.isEmpty && !ownerId.isEmpty && self.gatewayService?.authToken != nil
     }
 
     func start() {
@@ -109,53 +100,46 @@ private let kOwnerIdKey = "owner_id"
 
     // MARK: - PRIVATE
     private func tryReadRequiredUserData() throws {
-
         guard let plistPath = Bundle.main.path(forResource: "SampleAuthConstants", ofType: "plist"),
               let dataXML = FileManager.default.contents(atPath: plistPath)else {
             throw ValueReadingError.missingRequiredValue("No required data found in app Bundle")
         }
 
-        do {
-            var propertyListFormat =  PropertyListSerialization.PropertyListFormat.xml
-            let anObject = try PropertyListSerialization.propertyList(from: dataXML, options: .mutableContainersAndLeaves, format: &propertyListFormat)
+        var propertyListFormat =  PropertyListSerialization.PropertyListFormat.xml
+        let object = try PropertyListSerialization.propertyList(from: dataXML, options: .mutableContainersAndLeaves, format: &propertyListFormat)
 
-            guard let values = anObject as? [String: String] else {
-                throw ValueReadingError.missingRequiredValue("Wrong Required Data format.")
-            }
-
-            guard let lvAppToken = values[kAPPTokenKey],
-                  let lvOwnerId = values[kOwnerIdKey] else {
-                throw ValueReadingError.missingRequiredValue("No APP Token or Owner ID")
-            }
-
-            appToken = lvAppToken
-            ownerId = lvOwnerId
-            _statusPublisher.send("plist values present")
-
-        } catch let plistError {
-            throw plistError
+        guard let values = object as? [String: String] else {
+            throw ValueReadingError.missingRequiredValue("Wrong Required Data format.")
         }
 
+        guard let lvAppToken = values[kAPPTokenKey],
+              let lvOwnerId = values[kOwnerIdKey] else {
+            throw ValueReadingError.missingRequiredValue("No APP Token or Owner ID")
+        }
+
+        appToken = lvAppToken
+        ownerId = lvOwnerId
+        _statusPublisher.send("plist values present")
     }
 
     func checkAndRequestSystemPermissions() {
-        if !permissions.gatewayPermissionsGranted {
+        guard permissions.gatewayPermissionsGranted else {
+            handlePermissionsRequestsCompletion(true)
+            return
+        }
 
-            self.permissionsCompletionCancellable =
-            permissions.$gatewayPermissionsGranted
-                .sink {[weak self] granted in
-                    if let weakSelf = self {
-                        weakSelf.permissionsCompletionCancellable = nil
-                        weakSelf.handlePermissionsRequestsCompletion(granted)
-                    }
-
+        self.permissionsCompletionCancellable =
+        permissions.$gatewayPermissionsGranted
+            .sink { [weak self] granted in
+                if let weakSelf = self {
+                    weakSelf.permissionsCompletionCancellable = nil
+                    weakSelf.handlePermissionsRequestsCompletion(granted)
                 }
 
-            permissions.requestLocationAuth()
-            permissions.requestBluetoothAuth()
-        } else {
-            handlePermissionsRequestsCompletion(true)
-        }
+            }
+
+        permissions.requestLocationAuth()
+        permissions.requestBluetoothAuth()
     }
 
     private func handlePermissionsRequestsCompletion(_ granted: Bool) {
@@ -168,13 +152,13 @@ private let kOwnerIdKey = "owner_id"
     // MARK: -
 
     private func startGateway() {
-        guard let gatewayService = self.gatewayService,
+        guard let gatewayService,
               let authToken = gatewayService.authToken else {
             return
         }
 
-        gatewayService.gatewayTokensCallBack = {[weak self] optionalError in
-            guard let self = self else { return }
+        gatewayService.gatewayTokensCallBack = { [weak self] optionalError in
+            guard let self else { return }
 
             if let error = optionalError {
                 self._statusPublisher.send("Error obtaining connectionTokens: \(error)")
@@ -182,31 +166,26 @@ private let kOwnerIdKey = "owner_id"
             }
 
             self._statusPublisher.send("Obtained connection tokens")
-            if let gwService = self.gatewayService,
-               let accessToken = gwService.gatewayAccessToken {
-
-                _ = gatewayService.startConnection(withGatewayToken: accessToken)
+            if let gatewayService = self.gatewayService,
+               let accessToken = gatewayService.gatewayAccessToken {
+                gatewayService.startConnection(withGatewayToken: accessToken)
             }
-
         }
 
         gatewayService.registerAsGateway(userAuthToken: authToken, ownerId: ownerId)
-
     }
 
     private func startBLE() {
-
         _bleScannerPublisher.send(0.0)
-        let bleService = BLEService()
-        self.bleService = bleService
+        self.bleService = BLEService()
 
         var pacingObject: PacketsPacing?
 
-        if let gwService = self.gatewayService {
-            let pacingService = PacketsPacingService(with: WeakObject(gwService))
+        if let gatewayService {
+            let pacingService = PacketsPacingService(with: WeakObject(gatewayService))
             pacingObject = pacingService
 
-            gwService.setSendEventSignal {[weak self] in
+            gatewayService.setSendEventSignal { [weak self] in
                 self?._mqttSentMessagePublisher.send(())
             }
         }
@@ -214,11 +193,11 @@ private let kOwnerIdKey = "owner_id"
         let bleManager = BLEPacketsManager(pacingReceiver: pacingObject)
 
         self.blePacketsmanager = bleManager
-        bleManager.subscribeToBLEpacketsPublisher(publisher: bleService.packetPublisher)
+        bleManager.subscribeToBLEpacketsPublisher(publisher: bleService!.packetPublisher)
         bleManager.start()
 
-        bleService.setScanningMode(inBackground: false)
-        bleService.startListeningBroadcasts()
+        bleService!.setScanningMode(inBackground: false)
+        bleService!.startListeningBroadcasts()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {[unowned self] in
             _bleScannerPublisher.send(0.5)
         }

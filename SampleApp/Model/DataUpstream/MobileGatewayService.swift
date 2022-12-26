@@ -12,7 +12,7 @@ class MobileGatewayService {
     /// send event outside for interested client (for debug or some UI updates like blink some indicator
     private(set) var sendEventSignal: (()->Void)?
     var didConnectCompletion: ((Bool) ->Void)?
-    /// completio on Did Disconnect message from the MQTTClient
+    /// completion on Did Disconnect message from the MQTTClient
     var didStopCompletion: (()->Void)?
     var authTokenCallback: ((Error?) ->Void)?
     var gatewayTokensCallBack: ((Error?) -> Void)?
@@ -22,10 +22,7 @@ class MobileGatewayService {
 
     private let currentOwnerId: String
 
-    private lazy var gatewayId: String = {
-        let anID = Device.deviceId
-        return anID
-    }()
+    private lazy var gatewayId: String = Device.deviceId
 
     private var isConnecting = false
     private var mqttClient: MQTTClient?
@@ -41,9 +38,7 @@ class MobileGatewayService {
     // MARK: - Init
 
     init(ownerId: String, authTokenRequester: AuthTokenRequester, gatewayRegistrator: GatewayRegistrator) {
-
         self.currentOwnerId = ownerId
-
         self.gatewayRegistrator = gatewayRegistrator
         self.authTokenRequester = authTokenRequester
     }
@@ -56,9 +51,8 @@ class MobileGatewayService {
     // MARK: - Authorization
 
     func obtainAuthToken() {
-
-        authTokenRequester.getAuthToken {[weak self] tokenResult in
-            guard let self = self else {
+        authTokenRequester.getAuthToken { [weak self] tokenResult in
+            guard let self else {
                 return
             }
 
@@ -74,7 +68,7 @@ class MobileGatewayService {
 
     func registerAsGateway(userAuthToken token: String, ownerId: String) {
         gatewayRegistrator.registerGatewayFor(owner: ownerId, gatewayId: gatewayId, authToken: token) { [weak self] gatewayTokensResult in
-            guard let self = self else {
+            guard let self else {
                 return
             }
 
@@ -92,7 +86,7 @@ class MobileGatewayService {
 
     func refreshRegistration(gatewayRefreshToken refreshToken: String) {
         gatewayRegistrator.refreshGatewayTokensWith(refreshToken: refreshToken) { [weak self] gatewayTokensResult in
-            guard let self = self else {
+            guard let self else {
                 return
             }
 
@@ -108,8 +102,7 @@ class MobileGatewayService {
     }
 
     // MARK: - Connection
-    func startConnection(withGatewayToken gwAuthToken: String) -> Bool {
-
+    @discardableResult func startConnection(withGatewayToken gwAuthToken: String) -> Bool {
         guard !isConnecting else {
             return false
         }
@@ -122,7 +115,7 @@ class MobileGatewayService {
                                          endpoint: MQTTEndpoint.defaultEndpoint,
                                          delegate: self)
             let started = try client.start()
-            self.mqttClient = client
+            mqttClient = client
             return started
         } catch {
             isConnecting = false
@@ -134,7 +127,6 @@ class MobileGatewayService {
 
     func stop() {
         self.mqttClient?.stopAndDisconnect()
-        // self.mqttClient = nil
     }
 
     func setSendEventSignal(_ eventHandler: @escaping(()->Void)) {
@@ -143,7 +135,6 @@ class MobileGatewayService {
 
     // MARK: - Topic
     private func getTopicString(topic: Topic) -> String? {
-
         guard let clientId = mqttClient?.clientId else {
             return nil
         }
@@ -151,8 +142,7 @@ class MobileGatewayService {
         let topicName = topic.rawValue
         let ownerId = currentOwnerId
 
-        let toReturn = "\(topicName)-prod/\(ownerId)/\(clientId)"
-        return toReturn
+        return "\(topicName)-prod/\(ownerId)/\(clientId)"
     }
 
     // MARK: - MQTT transmissions
@@ -194,24 +184,21 @@ extension MobileGatewayService: TagPacketsSender {
 extension MobileGatewayService: MQTTClientDelegate {
     func mqttClientDidConnect() {
         isConnecting = false
-        self.isConnected = true
+        isConnected = true
         didConnectCompletion?(true)
     }
 
     func mqttClientDidDisconnect() {
         isConnecting = false
-        self.isConnected = false
-        self.isConnected = false
-        self.mqttClient = nil
+        isConnected = false
+        mqttClient = nil
         didStopCompletion?()
     }
 
     func mqttClientDidEncounterError(_ error: Error) {
         print("MobileGatewayService mqttClientDidEncounterError() Error:\(error)")
         isConnecting = false
-        self.isConnected = false
-        self.isConnected = false
-
+        isConnected = false
     }
 }
 

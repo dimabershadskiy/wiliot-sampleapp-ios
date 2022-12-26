@@ -16,15 +16,12 @@ extension BLEPacket {
     }
 
     var rotatingId: String? {
-        let range: Range<Int> = isManufacturer ? 9..<15 : 0..<6
-
         guard data.count >= 15 else {
             return nil
         }
 
+        let range: Range<Int> = isManufacturer ? 9..<15 : 0..<6
         let rotatingIdData = data.subdata(in: range)
-        let rotatingIdString = rotatingIdData.hexEncodedString()
-
-        return rotatingIdString
+        return rotatingIdData.hexEncodedString()
     }
 }

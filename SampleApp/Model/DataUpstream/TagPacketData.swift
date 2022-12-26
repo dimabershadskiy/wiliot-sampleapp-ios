@@ -6,12 +6,12 @@ import Foundation
 struct TagPacketData: Encodable {
     let payload: String
     /// timestamp in milliseconds
-    var timestamp: TimeInterval = Date().milisecondsFrom1970()
-    var location: Location?
-    var acceleration: AccelerationData?
-    var bridgeId: String?
-    var groupId: String?
-    var sequenceId: Int?
-    var nfpkt: Int?
-    var rssi: Int?
+    let timestamp: TimeInterval
+    let location: Location?
+    let acceleration: AccelerationData?
+    let bridgeId: String?
+    let groupId: String?
+    let sequenceId: Int?
+    let nfpkt: Int?
+    let rssi: Int?
 }

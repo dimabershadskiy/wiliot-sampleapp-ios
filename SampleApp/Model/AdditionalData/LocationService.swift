@@ -5,12 +5,8 @@ import Foundation
 import CoreLocation
 import Combine
 
-class LocationService {
+class LocationService: NSObject {
     private var locationManager: CLLocationManager = CLLocationManager()
-    private lazy var locDelegate: LocationManagerDelegate = {
-        let delegate = LocationManagerDelegate(target: self)
-        return delegate
-    }()
     private lazy var beacon: iBeacon = iBeacon()
     private lazy var targetBeaconsUUIDs: [UUID] = [beacon.targetUUID]
     var lastLocation: CLLocation?
@@ -26,9 +22,10 @@ extension LocationService {
     var currentLocation: CLLocation? {
         locationManager.location
     }
+
     func startLocationUpdates() {
         if locationManager.delegate == nil {
-            locationManager.delegate = self.locDelegate
+            locationManager.delegate = self
         }
 
         locationManager.startUpdatingLocation()
@@ -38,20 +35,18 @@ extension LocationService {
     }
 
     func stopLocationUpdates() {
-
         print("LocationService stopLocationUpdates ")
 
         if locationManager.delegate == nil {
-            locationManager.delegate = self.locDelegate
+            locationManager.delegate = self
         }
 
         locationManager.stopUpdatingLocation()
     }
 
     func startRanging() {
-
         if locationManager.delegate == nil {
-            locationManager.delegate = self.locDelegate
+            locationManager.delegate = self.self
         }
 
         let region: CLBeaconRegion = beacon.clBeaconRegion
@@ -64,13 +59,12 @@ extension LocationService {
 
     func stopRanging() {
         if locationManager.delegate == nil {
-            locationManager.delegate = self.locDelegate
+            locationManager.delegate = self
         }
 
         let region: CLBeaconRegion = beacon.clBeaconRegion
         locationManager.stopMonitoring(for: region)
         locationManager.stopRangingBeacons(satisfying: CLBeaconIdentityConstraint(uuid: region.uuid))
-
     }
 
     private func startedRangingForBeacons(manager: CLLocationManager) {
@@ -108,12 +102,9 @@ extension LocationService {
 }
 
 // MARK: - Location Region
-extension LocationService: LocationManagerDelegateTarget {
+extension LocationService: CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-
-        let locationAuthState = manager.authorizationStatus
-
-        switch locationAuthState {
+        switch manager.authorizationStatus {
         case .authorizedWhenInUse:
             startRanging()
         case .notDetermined:
@@ -139,7 +130,6 @@ break
 break
 #endif
             startRanging()
-
         @unknown default:
             fatalError("LocationService Unhandled 'authorizationStatus' in Location Authorization status")
         }
@@ -150,7 +140,6 @@ break
     }
 
     func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint) {
-
         if beacons.isEmpty {
             return
         }
@@ -159,26 +148,19 @@ break
         let intersection = Set(targetBeaconsUUIDs).intersection(receivedUUIDS)
         if !intersection.isEmpty {
             print(" -> did range beacons. constraint(s): \(intersection.map({$0.uuidString})) <- ")
-
         }
     }
 
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-        var readable = ""
-        switch state {
-        case .unknown:
-            readable = "UNKNOWN"
-        case .outside:
-            readable = "OUTSIDE"
-        case .inside:
-            readable = "INSIDE"
-        default:
-            break
-        }
+        let readable: String = {
+            switch state {
+            case .unknown: return "UNKNOWN"
+            case .outside: return "OUTSIDE"
+            case .inside: return "INSIDE"
+            default: return ""
+            }
+        }()
         print(" --> didDetermineState : \(readable) <--")
-        if state == .inside {
-
-        }
     }
 
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
@@ -205,81 +187,4 @@ break
         lastLocation = locations.last
     }
 
-}
-
-// MARK: - Ranging,Location, iBeacon
-
-private protocol LocationManagerDelegateTarget: AnyObject {
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager)
-    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion)
-    func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint)
-    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion)
-    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error)
-    func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager)
-    func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager)
-    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion)
-    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion)
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
-}
-
-@objc private class LocationManagerDelegate: NSObject {
-    weak var target: LocationManagerDelegateTarget?
-    init(target: LocationManagerDelegateTarget) {
-        self.target = target
-    }
-}
-
-extension LocationManagerDelegate: CLLocationManagerDelegate {
-
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if !locations.isEmpty {
-            target?.locationManager(manager, didUpdateLocations: locations)
-        }
-    }
-
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        target?.locationManagerDidChangeAuthorization(manager)
-    }
-
-    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        if beacons.isEmpty {
-            return
-        }
-
-        target?.locationManager(manager, didRangeBeacons: beacons, in: region)
-    }
-
-    func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint) {
-        if beacons.isEmpty {
-            return
-        }
-
-        target?.locationManager(manager, didRange: beacons, satisfying: beaconConstraint)
-    }
-
-    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        target?.locationManager(manager, didEnterRegion: region)
-
-    }
-
-    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        target?.locationManager(manager, didExitRegion: region)
-    }
-
-    func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
-        target?.locationManagerDidPauseLocationUpdates(manager)
-    }
-
-    func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
-        target?.locationManagerDidResumeLocationUpdates(manager)
-    }
-
-    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        target?.locationManager(manager, monitoringDidFailFor: region, withError: error)
-    }
-
-    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-        target?.locationManager(manager, didDetermineState: state, for: region)
-
-    }
 }

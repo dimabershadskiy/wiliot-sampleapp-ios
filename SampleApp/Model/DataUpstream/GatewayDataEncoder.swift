@@ -15,8 +15,7 @@ class GatewayDataEncoder {
     static let encoder = JSONEncoder()
 
     static func encode<GWData>(_ gatewayData: GWData) throws -> Data where GWData: Encodable {
-        let resultData = try encoder.encode(gatewayData)
-        return resultData
+        return try encoder.encode(gatewayData)
     }
 
     static func encodeDataToString(_ data: Data) throws -> String {

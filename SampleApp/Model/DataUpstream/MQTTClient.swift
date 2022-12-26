@@ -26,13 +26,12 @@ public enum MQTTClientError: Error, CaseIterable {
 
 private let keepAliveSeconds: UInt16 = 60
 
-public final class MQTTClient {
+public final class MQTTClient: NSObject {
 
     public private(set) var clientId: String
     var connectionToken: String
     var endpoint: MQTTEndpoint
     weak var delegate: MQTTClientDelegate?
-    var cocoaMQTTDelegate: CocoaMQTTDelegateObject?
     private(set) var connectionState: String = "Unknown"
 
     private var mqtt: CocoaMQTT?
@@ -52,7 +51,9 @@ public final class MQTTClient {
         self.connectionToken = connectionToken
         self.endpoint = endpoint
         self.delegate = delegate
-        self.cocoaMQTTDelegate = CocoaMQTTDelegateObject()
+
+        super.init()
+
         try prepareMQTT()
     }
 
@@ -70,61 +71,46 @@ public final class MQTTClient {
                          host: endpoint.host,
                          port: endpoint.port)
 
-        do {
-            let jwt: JWT = try decode(jwt: connectionToken) // Gateway Auth token
-            if let expDate = jwt.expiresAt {
-                let currentDate = Date()
-                let tokenExpirationSeconds = expDate.secondsFrom(anotherDate: currentDate)
-                print(" - Gateway Token: Time to expire: \(tokenExpirationSeconds) seconds")
-                if tokenExpirationSeconds < 100 {
-                    throw MQTTClientError.expiringToken
-                }
+        let jwt: JWT = try decode(jwt: connectionToken) // Gateway Auth token
+        if let expDate = jwt.expiresAt {
+            let currentDate = Date()
+            let tokenExpirationSeconds = expDate.secondsFrom(anotherDate: currentDate)
+            print(" - Gateway Token: Time to expire: \(tokenExpirationSeconds) seconds")
+            if tokenExpirationSeconds < 100 {
+                throw MQTTClientError.expiringToken
             }
-
-            guard let username = jwt.claim(name: "username").string else {
-                throw MQTTClientError.invalidTokenUsername
-            }
-
-           // let username: String = jwt.username ?? ""
-            mqtt.username = username
-            mqtt.password = connectionToken
-            mqtt.keepAlive = keepAliveSeconds
-            mqtt.autoReconnect = true
-            mqtt.autoReconnectTimeInterval = 1
-            mqtt.maxAutoReconnectTimeInterval = 10
-            mqtt.allowUntrustCACertificate = true // this is bad.
-            mqtt.cleanSession = true
-            mqtt.enableSSL = true
-            mqtt.logLevel = .off// .debug
-            mqtt.backgroundOnSocket = true
-            self.cocoaMQTTDelegate?.target = self
-            mqtt.delegate = self.cocoaMQTTDelegate
-
-        } catch {
-            throw error
         }
+
+        guard let username = jwt.claim(name: "username").string else {
+            throw MQTTClientError.invalidTokenUsername
+        }
+
+        mqtt.username = username
+        mqtt.password = connectionToken
+        mqtt.keepAlive = keepAliveSeconds
+        mqtt.autoReconnect = true
+        mqtt.autoReconnectTimeInterval = 1
+        mqtt.maxAutoReconnectTimeInterval = 10
+        mqtt.allowUntrustCACertificate = true // this is bad.
+        mqtt.cleanSession = true
+        mqtt.enableSSL = true
+        mqtt.logLevel = .off// .debug
+        mqtt.backgroundOnSocket = true
+        mqtt.delegate = self
 
         self.mqtt = mqtt
     }
 
     @discardableResult
     public func start() throws -> Bool {
-        if let _ = mqtt {
-            return connectMQTT()
-//            return mqtt.connect()
-        } else {
+        if mqtt == nil {
             try prepareMQTT()
         }
-
         return connectMQTT()
     }
 
     private func connectMQTT() -> Bool {
-        guard let mqtt = self.mqtt else {
-            return false
-        }
-
-        return mqtt.connect()
+        return mqtt?.connect() ?? false
     }
 
     public func stopAndDisconnect() {
@@ -137,7 +123,7 @@ public final class MQTTClient {
 //        #if DEBUG
 //        print("+ MQTTClient TRYING sendMessage. Date: \(Date()), topic: \(topic)")
 //        #endif
-        guard let mqtt = self.mqtt else {
+        guard let mqtt else {
             throw MQTTClientError.mqttClientNotSet
         }
 
@@ -161,48 +147,45 @@ extension MQTTClient {
     }
 }
 
-// MARK: - CocoaMQTTDelegateObjectTarget
-extension MQTTClient: CocoaMQTTDelegateObjectTarget {
-    func mqtt(_ mqtt: CocoaMQTT, didReceive trust: SecTrust, completionHandler: @escaping (Bool) -> Void) {
+// MARK: - CocoaMQTTDelegate
+extension MQTTClient: CocoaMQTTDelegate {
+    public func mqtt(_ mqtt: CocoaMQTT, didReceive trust: SecTrust, completionHandler: @escaping (Bool) -> Void) {
         completionHandler(true)
     }
 
-    func mqtt(_ mqtt: CocoaMQTT, didConnectAck ack: CocoaMQTTConnAck) {
+    public func mqtt(_ mqtt: CocoaMQTT, didConnectAck ack: CocoaMQTTConnAck) {
         trace("did Connect Acknowledgements")
     }
 
-    func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
+    public func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
 //        trace("didPublishMessage: \(message), id: \(id)")
     }
 
-    func mqtt(_ mqtt: CocoaMQTT, didPublishComplete id: UInt16) {
+    public func mqtt(_ mqtt: CocoaMQTT, didPublishComplete id: UInt16) {
         trace("didPublishComplete: \(id)")
     }
 
-    func mqtt(_ mqtt: CocoaMQTT, didPublishAck id: UInt16) {
+    public func mqtt(_ mqtt: CocoaMQTT, didPublishAck id: UInt16) {
 //        trace("didPublishAck: \(id)")
     }
 
-    func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16) {
+    public func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16) {
         trace("didReceiveMessage: \( String(data: Data(message.payload), encoding: .utf8) ?? "-unparsed-")")
     }
 
-    func mqtt(_ mqtt: CocoaMQTT, didSubscribeTopics success: NSDictionary, failed: [String]) {
+    public func mqtt(_ mqtt: CocoaMQTT, didSubscribeTopics success: NSDictionary, failed: [String]) {
         trace("didSubscribeTopics: \(success) \nfalied: \(failed)")
     }
 
-    func mqtt(_ mqtt: CocoaMQTT, didUnsubscribeTopics topics: [String]) {
+    public func mqtt(_ mqtt: CocoaMQTT, didUnsubscribeTopics topics: [String]) {
         trace("didUnsubscribeTopics: [\(topics)]")
     }
 
-    func mqttDidDisconnect(_ mqtt: CocoaMQTT, withError err: Error?) {
+    public func mqttDidDisconnect(_ mqtt: CocoaMQTT, withError err: Error?) {
         if let error = err {
             trace("did disconnect: \(err.debugDescription)")
             print("MQTT DISCONNECTION ERROR:\n \(error)\n")
             connectionState = "didDisconnect, Error(\(error.localizedDescription)"
-            let customError = NSError(domain: "com.MQTTCient",
-                                      code: 1,
-                                      userInfo: [NSLocalizedDescriptionKey: "MQTT connection lost with cause: \(connectionState)"])
 
             delegate?.mqttClientDidEncounterError(error)
         } else {
@@ -217,27 +200,23 @@ extension MQTTClient: CocoaMQTTDelegateObjectTarget {
         }
     }
 
-    func mqttDidPing(_ mqtt: CocoaMQTT) {
+    public func mqttDidPing(_ mqtt: CocoaMQTT) {
         trace("did ping")
     }
 
-    func mqttDidReceivePong(_ mqtt: CocoaMQTT) {
+    public func mqttDidReceivePong(_ mqtt: CocoaMQTT) {
         trace("did recieve pong")
     }
 
-    func mqtt(_ mqtt: CocoaMQTT, didStateChangeTo state: CocoaMQTTConnState) {
+    public func mqtt(_ mqtt: CocoaMQTT, didStateChangeTo state: CocoaMQTTConnState) {
         trace("didStateChange To: \(state.description)")
         switch state {
         case .connected:
             connectionState = state.description
             delegate?.mqttClientDidConnect()
-
         case .disconnected:
             connectionState = state.description
-
-            // stopAndDisconnect()
             delegate?.mqttClientDidDisconnect()
-
         case .connecting:
             connectionState = state.description
             return
@@ -247,88 +226,7 @@ extension MQTTClient: CocoaMQTTDelegateObjectTarget {
 
  // MARK: - Date extension
 private extension Date {
-func secondsFrom(anotherDate: Date) -> Int {
-        let seconds = Calendar.current.dateComponents([.second], from: anotherDate, to: self).second ?? 0
-        return seconds
+    func secondsFrom(anotherDate: Date) -> Int {
+        return Calendar.current.dateComponents([.second], from: anotherDate, to: self).second ?? 0
     }
-}
-
-protocol CocoaMQTTDelegateObjectTarget: AnyObject {
-    func mqtt(_ mqtt: CocoaMQTT, didConnectAck ack: CocoaMQTTConnAck)
-
-    func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16)
-
-    func mqtt(_ mqtt: CocoaMQTT, didPublishComplete id: UInt16)
-
-    func mqtt(_ mqtt: CocoaMQTT, didPublishAck id: UInt16)
-
-    func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16)
-
-    func mqtt(_ mqtt: CocoaMQTT, didSubscribeTopics success: NSDictionary, failed: [String])
-
-    func mqtt(_ mqtt: CocoaMQTT, didUnsubscribeTopics topics: [String])
-
-    func mqttDidPing(_ mqtt: CocoaMQTT)
-
-    func mqttDidReceivePong(_ mqtt: CocoaMQTT)
-
-    func mqttDidDisconnect(_ mqtt: CocoaMQTT, withError err: Error?)
-
-    func mqtt(_ mqtt: CocoaMQTT, didStateChangeTo state: CocoaMQTTConnState)
-
-    func mqtt(_ mqtt: CocoaMQTT, didReceive trust: SecTrust, completionHandler: @escaping (Bool) -> Void)
-}
-
-class CocoaMQTTDelegateObject: NSObject, CocoaMQTTDelegate {
-
-    weak var target: CocoaMQTTDelegateObjectTarget?
-
-    func mqtt(_ mqtt: CocoaMQTT, didConnectAck ack: CocoaMQTTConnAck) {
-        target?.mqtt(mqtt, didConnectAck: ack)
-    }
-
-    func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
-        target?.mqtt(mqtt, didPublishMessage: message, id: id)
-    }
-
-    func mqtt(_ mqtt: CocoaMQTT, didPublishAck id: UInt16) {
-        target?.mqtt(mqtt, didPublishAck: id)
-    }
-
-    func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16) {
-        target?.mqtt(mqtt, didReceiveMessage: message, id: id)
-    }
-
-    func mqtt(_ mqtt: CocoaMQTT, didSubscribeTopics success: NSDictionary, failed: [String]) {
-        target?.mqtt(mqtt, didSubscribeTopics: success, failed: failed)
-    }
-
-    func mqtt(_ mqtt: CocoaMQTT, didUnsubscribeTopics topics: [String]) {
-        target?.mqtt(mqtt, didUnsubscribeTopics: topics)
-    }
-
-    func mqttDidPing(_ mqtt: CocoaMQTT) {
-        target?.mqttDidPing(mqtt)
-    }
-
-    func mqttDidReceivePong(_ mqtt: CocoaMQTT) {
-        target?.mqttDidReceivePong(mqtt)
-    }
-
-    func mqttDidDisconnect(_ mqtt: CocoaMQTT, withError err: Error?) {
-        target?.mqttDidDisconnect(mqtt, withError: err)
-    }
-
-    func mqtt(_ mqtt: CocoaMQTT, didReceive trust: SecTrust, completionHandler: @escaping (Bool) -> Void) {
-        target?.mqtt(mqtt, didReceive: trust, completionHandler: completionHandler)
-    }
-
-    func mqtt(_ mqtt: CocoaMQTT, didStateChangeTo state: CocoaMQTTConnState) {
-        target?.mqtt(mqtt, didStateChangeTo: state)
-    }
-
-    func mqtt(_ mqtt: CocoaMQTT, didPublishComplete id: UInt16) {
-        target?.mqtt(mqtt, didPublishComplete: id)
-    }
-
 }

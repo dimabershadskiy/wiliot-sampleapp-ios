@@ -13,11 +13,7 @@ class BeaconDataReader {
         let groupIdData = data.subdata(in: groupIdRange)
         let groupIdString = groupIdData.hexEncodedString()
 
-        if isPacketFDAF(data), groupIdString == "0000ec" {
-//            print("groupIdString: \(groupIdString)")
-            return true
-        }
-        return false
+        return isPacketFDAF(data) && groupIdString == "0000ec"
     }
 
     class func isBeaconDataGWtoBridgeMessage(_ data: Data) -> Bool {
@@ -25,11 +21,7 @@ class BeaconDataReader {
         let groupIdData = data.subdata(in: groupIdRange)
         let groupIdString = groupIdData.hexEncodedString()
 
-        if isPacketFDAF(data), groupIdString == "0000ed" {
-//            print("Group ID: \(groupIdString)")
-            return true
-        }
-        return false
+        return isPacketFDAF(data) && groupIdString == "0000ed"
     }
 
     class func isBeaconDataBridgeToGWmessage(_ data: Data) -> Bool {
@@ -37,11 +29,7 @@ class BeaconDataReader {
         let groupIdData = data.subdata(in: groupIdRange)
         let groupIdString = groupIdData.hexEncodedString()
 
-        if isPacketFDAF(data), groupIdString == "0000eb" ||  groupIdString == "0000ee" {
-//            print("Group ID: \(groupIdString) isBeaconDataBridgeToGWmessage- TRUE")
-            return true
-        }
-        return false
+        return isPacketFDAF(data) && ["0000eb", "0000ee"].contains(groupIdString)
     }
 
     class func tagPacketId(from data: Data) -> Data? {
@@ -59,21 +47,12 @@ class BeaconDataReader {
         return origTagPacketId
     }
 
-//    class func bridgeTagIdStringFrom(_ data:Data) -> String {
-//        let tagPacketIdentifier = data.subdata(in: 14..<18)
-//        let tagPacketIdentifierStr = tagPacketIdentifier.hexEncodedString()
-//        return tagPacketIdentifierStr
-//    }
-
     class func isPacketFDAF(_ data: Data) -> Bool {
         let serviceRange = 0..<2
         let aData = data.subdata(in: serviceRange)
         let packetTypeString = aData.hexEncodedString()
 
-        if packetTypeString == "fdaf" {
-            return true
-        }
-        return false
+        return packetTypeString == "fdaf"
     }
 
     class func isPacketAFFD(_ data: Data) -> Bool {
@@ -81,48 +60,27 @@ class BeaconDataReader {
         let aData = data.subdata(in: serviceRange)
         let packetTypeString = aData.hexEncodedString()
 
-        if packetTypeString == "affd" {
-            return true
-        }
-        return false
+        return packetTypeString == "affd"
     }
 
     class func bridgeMacAddressFrom(_ data: Data) -> String {
         let macAddressSubdata = bridgeMacAddressDataFrom(data)
-        let macAddressStr = macAddressSubdata.hexEncodedString(options: .upperCase)
-        return macAddressStr
+        return macAddressSubdata.hexEncodedString(options: .upperCase)
     }
 
     class func bridgeMacAddressDataFrom(_ data: Data) -> Data {
-        let macAddressSubdata = data.subdata(in: 5..<11)
-        return macAddressSubdata
+        return data.subdata(in: 5..<11)
     }
 
     class func first8BytesOf(data: Data) -> Data? {
-
         if data.count < 8 {
             return nil
         }
 
-        let range = 0..<8
-        return data.subdata(in: range)
+        return data.subdata(in: 0..<8)
     }
 
-//    class func isBeaconDataBridgeWithSWVersion(_ data:Data) -> Bool {
-//        if isPacketFDAF(data) {
-//            let groupIdRange = 2..<5
-//            let groupIdData = data.subdata(in: groupIdRange)
-//            let groupIdString = groupIdData.hexEncodedString()
-//            if groupIdString == "0000eb" {
-//                return true
-//            }
-//            print(" - groupIdString: \(groupIdString)")
-//        }
-//        return false
-//    }
-
     class func bridgeSoftwareVersionFrom(_ data: Data) -> (major: String, minor: String, patch: String) {
-
         let softWareVersionRange = 0..<3
         let softWareData = data.subdata(in: softWareVersionRange)
 
@@ -130,7 +88,6 @@ class BeaconDataReader {
     }
 
     class func bridgeSoftwareVersionFromCompact(softWareData: Data) -> BridgeSoftwareVersionStringsTuple {
-
         var result = (major: "", minor: "", patch: "")
 
         let majorVersionByte = softWareData.subdata(in: 0..<1)
@@ -157,12 +114,7 @@ class BeaconDataReader {
         }
 
         let aString = packetsBytes.hexEncodedString()
-
-        guard let intCount = Int(aString, radix: 16) else {
-            return nil
-        }
-
-        return intCount
+        return Int(aString, radix: 16)
     }
 
     class func rssiValue(from data: Data) -> Int? {
@@ -179,24 +131,3 @@ class BeaconDataReader {
         return Int(uint8value)
     }
 }
-
-// extension BeaconDataReader {
-//    class func softwareVersionStringFromSoftwareVersionTuple(_ tuple:BridgeSoftwareVersionStringsTuple, separator:String = ".") -> String {
-//        let majorVersion = removeLeadingZeroFromString(tuple.major)
-//        let minorVersion = removeLeadingZeroFromString(tuple.minor)
-//        let patchVersion = removeLeadingZeroFromString(tuple.patch)
-//
-//        let versionStrings:[String] = [majorVersion, minorVersion, patchVersion]
-//
-//        return versionStrings.joined(separator: separator)
-//    }
-//
-//    class func removeLeadingZeroFromString(_ string:String) -> String {
-//        var toReturn = string
-//        if string.hasPrefix("0") {
-//            let suffix = string.suffix(1)
-//            toReturn = String(suffix)
-//        }
-//        return toReturn
-//    }
-// }

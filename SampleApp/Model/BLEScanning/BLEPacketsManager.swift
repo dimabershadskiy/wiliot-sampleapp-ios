@@ -7,10 +7,7 @@ import Combine
 class BLEPacketsManager {
     private var cancellables: Set<AnyCancellable> = []
 
-    private lazy var accelerationService: MotionAccelerationService = {
-        let service = MotionAccelerationService(accelerationUpdateInterval: 1.0)
-        return service
-    }()
+    private lazy var accelerationService: MotionAccelerationService = MotionAccelerationService(accelerationUpdateInterval: 1.0)
 
     private lazy var locationService: LocationService = LocationService()
 
@@ -21,7 +18,7 @@ class BLEPacketsManager {
     }
 
     func subscribeToBLEpacketsPublisher(publisher: AnyPublisher<BLEPacket, Never>) {
-        publisher.sink {[weak self] packet in
+        publisher.sink { [weak self] packet in
             self?.handleBLEPacket(packet)
         }.store(in: &cancellables)
     }
@@ -30,23 +27,17 @@ class BLEPacketsManager {
         tryToStartAccelerometerUpdates()
         startLocationService()
     }
+
     // MARK: - Setup
     private func tryToStartAccelerometerUpdates() {
         do {
             try accelerationService.startUpdates()
+        } catch ValueReadingError.invalidValue(let optionalMessage) {
+            print("PixelService accelerometer is already working: \(optionalMessage ?? "-")")
+        } catch ValueReadingError.missingRequiredValue(let optionalMessage) {
+            print("PixelService accelerometer not availableError: \(optionalMessage ?? "-")")
         } catch let error {
-            if let handledError = error as? ValueReadingError {
-                switch handledError {
-                case .notFound:
-                    break
-                case .invalidValue(let optionalMessage):
-                    print("PixelService accelerometer is already working: \(optionalMessage ?? "-")")
-                case .missingRequiredValue(let optionalMessage):
-                    print("PixelService accelerometer not availableError: \(optionalMessage ?? "-")")
-                }
-            } else {
-                print("PixelService Unknown error while trying to start accelerometer updates: \(error)")
-            }
+            print("PixelService Unknown error while trying to start accelerometer updates: \(error)")
         }
     }
 
@@ -74,9 +65,8 @@ class BLEPacketsManager {
 //        print("BLEPacketsManager: \(blePacket.data.hexEncodedString(options: .upperCase)) - from - \(blePacket.uid.uuidString)")
 
         let accelerationData = self.accelerationService.currentAcceleration
-        var location: Location?
-        if let clLocaton = locationService.lastLocation {
-            location = Location(latitude: clLocaton.coordinate.latitude, longtitude: clLocaton.coordinate.longitude)
+        let location = locationService.lastLocation.flatMap {
+            Location(latitude: $0.coordinate.latitude, longtitude: $0.coordinate.longitude)
         }
         let payloadStr = blePacket.data.hexEncodedString(options: .upperCase)
 
