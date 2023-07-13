@@ -3,8 +3,8 @@
 <plist version="1.0">
 <dict>
 	<key>app_token</key>
-	<string>Enter_Your_APP_Token</string>
+	<string>WRONG_API_TOKEN_REPLACE_WITH_REAL_ONE</string>
 	<key>owner_id</key>
-	<string>Enter_Your_Owner_ID</string>
+	<string>254350853646</string>
 </dict>
 </plist>

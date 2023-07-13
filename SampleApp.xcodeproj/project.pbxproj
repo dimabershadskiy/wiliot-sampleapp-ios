@@ -14,6 +14,8 @@
 		2C31501028D8AC3B000A3183 /* BeaconDataReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31500F28D8AC3B000A3183 /* BeaconDataReader.swift */; };
 		2C31501228D8ACF8000A3183 /* PacketsPacingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31501128D8ACF8000A3183 /* PacketsPacingService.swift */; };
 		2C31501428D8AD15000A3183 /* WeakObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31501328D8AD15000A3183 /* WeakObject.swift */; };
+		2C84AE802A6038070036F7C4 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C84AE7F2A6038070036F7C4 /* Device.swift */; };
+		2C84AE822A6049000036F7C4 /* LocationSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C84AE812A6049000036F7C4 /* LocationSource.swift */; };
 		2C8B5B1828D8456900BC45E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B1728D8456900BC45E8 /* AppDelegate.swift */; };
 		2C8B5B1A28D8456900BC45E8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B1928D8456900BC45E8 /* SceneDelegate.swift */; };
 		2C8B5B1C28D8456900BC45E8 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B1B28D8456900BC45E8 /* MainViewController.swift */; };
@@ -32,10 +34,8 @@
 		2C8B5B3F28D85B3100BC45E8 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B3E28D85B3100BC45E8 /* Errors.swift */; };
 		2C8B5B4228D85B5E00BC45E8 /* GatewayPacketsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4028D85B5E00BC45E8 /* GatewayPacketsData.swift */; };
 		2C8B5B4328D85B5E00BC45E8 /* GatewayDataEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4128D85B5E00BC45E8 /* GatewayDataEncoder.swift */; };
-		2C8B5B4528D85BB600BC45E8 /* AccelerationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4428D85BB600BC45E8 /* AccelerationData.swift */; };
 		2C8B5B4728D85BDC00BC45E8 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4628D85BDC00BC45E8 /* Date+Extensions.swift */; };
 		2C8B5B4928D85E8A00BC45E8 /* BLEPacketsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4828D85E8A00BC45E8 /* BLEPacketsManager.swift */; };
-		2C8B5B4B28D85F0100BC45E8 /* MotionAccelerationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4A28D85F0100BC45E8 /* MotionAccelerationService.swift */; };
 		2C8B5B4D28D8612000BC45E8 /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4C28D8612000BC45E8 /* Permissions.swift */; };
 		2C8B5B4F28D866CB00BC45E8 /* BLEService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4E28D866CB00BC45E8 /* BLEService.swift */; };
 		930ED3BCAD0DB1A18B18F9FF /* Pods_SampleApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF1F4F2E21FDEC6FBDA2AF1F /* Pods_SampleApp.framework */; };
@@ -49,6 +49,8 @@
 		2C31500F28D8AC3B000A3183 /* BeaconDataReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconDataReader.swift; sourceTree = "<group>"; };
 		2C31501128D8ACF8000A3183 /* PacketsPacingService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PacketsPacingService.swift; sourceTree = "<group>"; };
 		2C31501328D8AD15000A3183 /* WeakObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeakObject.swift; sourceTree = "<group>"; };
+		2C84AE7F2A6038070036F7C4 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
+		2C84AE812A6049000036F7C4 /* LocationSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSource.swift; sourceTree = "<group>"; };
 		2C8B5B1428D8456900BC45E8 /* SampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C8B5B1728D8456900BC45E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2C8B5B1928D8456900BC45E8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -69,10 +71,8 @@
 		2C8B5B3E28D85B3100BC45E8 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		2C8B5B4028D85B5E00BC45E8 /* GatewayPacketsData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GatewayPacketsData.swift; sourceTree = "<group>"; };
 		2C8B5B4128D85B5E00BC45E8 /* GatewayDataEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GatewayDataEncoder.swift; sourceTree = "<group>"; };
-		2C8B5B4428D85BB600BC45E8 /* AccelerationData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerationData.swift; sourceTree = "<group>"; };
 		2C8B5B4628D85BDC00BC45E8 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
 		2C8B5B4828D85E8A00BC45E8 /* BLEPacketsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEPacketsManager.swift; sourceTree = "<group>"; };
-		2C8B5B4A28D85F0100BC45E8 /* MotionAccelerationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MotionAccelerationService.swift; sourceTree = "<group>"; };
 		2C8B5B4C28D8612000BC45E8 /* Permissions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
 		2C8B5B4E28D866CB00BC45E8 /* BLEService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEService.swift; sourceTree = "<group>"; };
 		796428758A08449719B9B5BB /* Pods-SampleApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleApp.debug.xcconfig"; path = "Target Support Files/Pods-SampleApp/Pods-SampleApp.debug.xcconfig"; sourceTree = "<group>"; };
@@ -140,6 +140,7 @@
 				2C8B5B4628D85BDC00BC45E8 /* Date+Extensions.swift */,
 				2C31500928D86C7A000A3183 /* Data+Extension.swift */,
 				2C31501328D8AD15000A3183 /* WeakObject.swift */,
+				2C84AE7F2A6038070036F7C4 /* Device.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -181,10 +182,9 @@
 		2CC477DD28D9C09B00355A90 /* AdditionalData */ = {
 			isa = PBXGroup;
 			children = (
-				2C8B5B4A28D85F0100BC45E8 /* MotionAccelerationService.swift */,
-				2C8B5B4428D85BB600BC45E8 /* AccelerationData.swift */,
 				2C31500B28D89E88000A3183 /* LocationService.swift */,
 				2C8B5B3B28D85A9100BC45E8 /* Location.swift */,
+				2C84AE812A6049000036F7C4 /* LocationSource.swift */,
 			);
 			path = AdditionalData;
 			sourceTree = "<group>";
@@ -334,16 +334,16 @@
 				2C8B5B1C28D8456900BC45E8 /* MainViewController.swift in Sources */,
 				2C8B5B3C28D85A9100BC45E8 /* TagPacketData.swift in Sources */,
 				2C31501028D8AC3B000A3183 /* BeaconDataReader.swift in Sources */,
+				2C84AE822A6049000036F7C4 /* LocationSource.swift in Sources */,
 				2C31500E28D89EF0000A3183 /* iBeacon.swift in Sources */,
 				2C31500828D86BD5000A3183 /* BLEPacket.swift in Sources */,
 				2C8B5B4928D85E8A00BC45E8 /* BLEPacketsManager.swift in Sources */,
-				2C8B5B4B28D85F0100BC45E8 /* MotionAccelerationService.swift in Sources */,
 				2C8B5B1828D8456900BC45E8 /* AppDelegate.swift in Sources */,
 				2C8B5B4F28D866CB00BC45E8 /* BLEService.swift in Sources */,
 				2C8B5B4728D85BDC00BC45E8 /* Date+Extensions.swift in Sources */,
+				2C84AE802A6038070036F7C4 /* Device.swift in Sources */,
 				2C8B5B4D28D8612000BC45E8 /* Permissions.swift in Sources */,
 				2C8B5B1A28D8456900BC45E8 /* SceneDelegate.swift in Sources */,
-				2C8B5B4528D85BB600BC45E8 /* AccelerationData.swift in Sources */,
 				2C8B5B3928D853A000BC45E8 /* GatewayTokens.swift in Sources */,
 				2C8B5B2F28D84ECC00BC45E8 /* Model.swift in Sources */,
 				2C31500A28D86C7A000A3183 /* Data+Extension.swift in Sources */,
@@ -497,7 +497,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = JDSP3SA3RS;
+				DEVELOPMENT_TEAM = 729D4CP2WY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SampleApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SampleApp;

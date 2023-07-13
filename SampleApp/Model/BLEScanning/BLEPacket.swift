@@ -8,7 +8,7 @@ struct BLEPacket {
     let uid:UUID
     let rssi:Int
     let data:Data
-    let timeStamp = Date().milisecondsFrom1970()
+    let timeStamp:Double
 }
 
 extension BLEPacket {

@@ -29,6 +29,13 @@ class PacketsPacingService {
     private lazy var packetsStore:[UUID:TagPacketData] = [:]
     private lazy var externalTagID_to_UUIDMap:[String:[UUID]] = [:]
     var firstFireDate:Date?
+    private lazy var opQueue:OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "com.SampleApp.PacketsPacingService_operationQueue"
+        queue.maxConcurrentOperationCount = 1
+        
+        return queue
+    }()
     
     init(with tagPacketsSender:TagPacketsSender) {
         packetsSender = tagPacketsSender
@@ -77,13 +84,20 @@ class PacketsPacingService {
     
     private func pacingTimerFire() {
         
-        clearOldPacketsIfFound()
-        let packets = preparePacketsToSend()
+        opQueue.addOperation {[weak self] in
+            
+            guard let weakSelf = self else {
+                return
+            }
+            
+            weakSelf.clearOldPacketsIfFound()
+            let packets = weakSelf.preparePacketsToSend()
 
-        sendPackets(packets)
-        
-        if firstFireDate == nil {
-            firstFireDate = Date()
+            weakSelf.sendPackets(packets)
+            
+            if weakSelf.firstFireDate == nil {
+                weakSelf.firstFireDate = Date()
+            }
         }
     }
     

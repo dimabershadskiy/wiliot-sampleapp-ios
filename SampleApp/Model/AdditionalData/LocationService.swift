@@ -23,10 +23,11 @@ class LocationService {
 
 extension LocationService {
     
-    
     var currentLocation:CLLocation? {
         locationManager.location
     }
+    
+    
     func startLocationUpdates() {
         if locationManager.delegate == nil {
             locationManager.delegate = self.locDelegate
@@ -106,6 +107,16 @@ extension LocationService {
             print("\(self) \(#function) Couldn't turn on region monitoring: Region monitoring is not available for CLBeaconRegion class.")
             return
         }
+    }
+}
+
+//MARK: - LocationSource
+extension LocationService:LocationSource {
+    func getLocation() -> Location? {
+        if let clLoc = (self.lastLocation ?? self.currentLocation) {
+            return Location(geoLocation: clLoc)
+        }
+        return nil
     }
 }
 

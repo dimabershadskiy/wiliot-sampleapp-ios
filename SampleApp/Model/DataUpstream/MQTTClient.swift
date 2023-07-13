@@ -79,7 +79,9 @@ public final class MQTTClient {
             if let expDate = jwt.expiresAt {
                 let currentDate = Date()
                 let tokenExpirationSeconds = expDate.secondsFrom(anotherDate: currentDate)
+                #if DEBUG
                 print(" - Gateway Token: Time to expire: \(tokenExpirationSeconds) seconds")
+                #endif
                 if tokenExpirationSeconds < 100 {
                     throw MQTTClientError.expiringToken
                 }
@@ -134,15 +136,17 @@ public final class MQTTClient {
     }
     
     public func stopAndDisconnect() {
+        #if DEBUG
         print("+ MQTTClient stopAndDisconnect() --")
+        #endif
         mqtt?.autoReconnect = false
         mqtt?.disconnect()
     }
     
     public func sendMessage(_ message:String, topic:String) throws {
-//        #if DEBUG
-//        print("+ MQTTClient TRYING sendMessage. Date: \(Date()), topic: \(topic)")
-//        #endif
+        #if DEBUG
+        print("+ MQTTClient TRYING sendMessage. Date: \(Date()), topic: \(topic)")
+        #endif
         guard let mqtt = self.mqtt else {
             throw MQTTClientError.mqttClientNotSet
         }
@@ -205,21 +209,25 @@ extension MQTTClient : CocoaMQTTDelegateObjectTarget {
     func mqttDidDisconnect(_ mqtt: CocoaMQTT, withError err: Error?) {
         if let error = err {
             trace("did disconnect: \(err.debugDescription)")
+            #if DEBUG
             print("MQTT DISCONNECTION ERROR:\n \(error)\n")
+            #endif
+            
             connectionState = "didDisconnect, Error(\(error.localizedDescription)"
             let customError = NSError(domain: "com.MQTTCient",
                                       code: 1,
                                       userInfo: [NSLocalizedDescriptionKey: "MQTT connection lost with cause: \(connectionState)"])
             
             
-            delegate?.mqttClientDidEncounterError(error)
+            delegate?.mqttClientDidEncounterError(customError)
         }
         else {
             trace("did disconnect: \(err.debugDescription)")
-            print("MQTT DISCONNECTED")
+            
             connectionState = "didDisconnect"
            
             if !mqtt.autoReconnect {
+                self.mqtt?.delegate = nil
                 self.mqtt = nil
             }
             delegate?.mqttClientDidDisconnect()

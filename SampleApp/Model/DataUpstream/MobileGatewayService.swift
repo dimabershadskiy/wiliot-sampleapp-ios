@@ -1,12 +1,16 @@
 
 
 import Foundation
-import UIKit
+import Combine
+import OSLog
 
+#if DEBUG
+fileprivate let logger = Logger(subsystem: "Upstream", category: "MobileGatewayService")
+#else
+fileprivate let logger = Logger(.disabled)
+#endif
 
-class Device {
-    static var deviceId = UIDevice.current.identifierForVendor?.uuidString ?? ""
-}
+fileprivate let kSequenceIdMax = Int64.max
 
 class MobileGatewayService  {
     private(set) var authToken:String?
@@ -20,8 +24,14 @@ class MobileGatewayService  {
     var authTokenCallback:((Error?) ->())?
     var gatewayTokensCallBack:((Error?) -> ())?
     var isConnected:Bool = false
+    var locationSource:LocationSource?
     
     let gatewayType: String = "Wiliot iPhone"
+    var statusPublisher:AnyPublisher<String?, Never> {
+        return _statusPassThroughSubject.eraseToAnyPublisher()
+    }
+    
+    private lazy var _statusPassThroughSubject:PassthroughSubject<String?, Never> = .init()
     
     private let currentOwnerId:String
     
@@ -30,17 +40,29 @@ class MobileGatewayService  {
         return anID
     }()
     
+    private var sequenceIdCounter:Int64 = 0
     private var isConnecting = false
     private var mqttClient:MQTTClient?
     private let gatewayRegistrator:GatewayRegistrator
-    private let authTokenRequester: AuthTokenRequester
+    private let authTokenRequester:AuthTokenRequester
     
+    private var lastKnownLoction:Location?
+    
+    private var queuedCalls:[()->()] = []
+    private lazy var operationQueue:OperationQueue = {
+        let opQueue = OperationQueue()
+        opQueue.name = "com.SampleApp.MobileGatewayService.packetsSendingQueue"
+        opQueue.maxConcurrentOperationCount = 1
+        return opQueue
+    }()
+    
+    private var queueTimer:DispatchSourceTimer?
+    private var queueTimerQueue:DispatchQueue = DispatchQueue(label: "com.SampleApp.MobileGatewayService_timerQueue", qos: DispatchQoS.default, attributes: DispatchQueue.Attributes.initiallyInactive, autoreleaseFrequency: DispatchQueue.AutoreleaseFrequency.workItem, target: nil)
     
     
     private enum Topic:String {
         case data
-        case status
-        case bridgeStatus = "bridge-status"
+        //case status
     }
     
     //MARK: - Init
@@ -55,17 +77,24 @@ class MobileGatewayService  {
     
     deinit {
         mqttClient = nil
+        #if DEBUG
         print("+ MobileGatewayService deinit +")
+        #endif
     }
     
     //MARK: - Authorization
 
     func obtainAuthToken() {
-            
+        
+        _statusPassThroughSubject.send("Obtaining auth token")
+        
         authTokenRequester.getAuthToken {[weak self] tokenResult in
+            
             guard let self = self else {
                 return
             }
+        
+            self._statusPassThroughSubject.send(nil)
             
             switch tokenResult {
             case .failure(let error):
@@ -78,6 +107,7 @@ class MobileGatewayService  {
     }
     
     func registerAsGateway(userAuthToken token:String, ownerId:String) {
+        _statusPassThroughSubject.send("Registering as gateway...")
         gatewayRegistrator.registerGatewayFor(owner: ownerId, gatewayId: gatewayId, authToken: token) { [weak self] gatewayTokensResult in
             guard let self = self else {
                 return
@@ -96,6 +126,9 @@ class MobileGatewayService  {
     }
 
     func refreshRegistration(gatewayRefreshToken refreshToken:String) {
+        
+        _statusPassThroughSubject.send("Refreshing gateway authorization")
+        
         gatewayRegistrator.refreshGatewayTokensWith(refreshToken: refreshToken) { [weak self] gatewayTokensResult in
             guard let self = self else {
                 return
@@ -118,7 +151,7 @@ class MobileGatewayService  {
         guard !isConnecting else {
             return false
         }
-        
+        _statusPassThroughSubject.send("Connecting...")
         isConnecting = true
         
         do {
@@ -139,12 +172,70 @@ class MobileGatewayService  {
     }
     
     func stop() {
+        stopMessagesTimer()
         self.mqttClient?.stopAndDisconnect()
         //self.mqttClient = nil
     }
     
     func setSendEventSignal(_ eventHandler: @escaping(()->())) {
         self.sendEventSignal = eventHandler
+    }
+    
+    
+    private func startMessagesTimer() {
+        logger.notice(#function)
+        
+        let workItem = self.timerEventHandler()
+        
+        guard self.queueTimer == nil else {
+            self.queueTimer?.setEventHandler(handler: workItem)
+            return
+        }
+        
+        let aQueueTimer = DispatchSource.makeTimerSource(queue: queueTimerQueue)
+        
+        aQueueTimer.setEventHandler(handler: workItem)
+        self.queueTimer = aQueueTimer
+        
+        self.queueTimerQueue.activate()
+        aQueueTimer.schedule(deadline: .now() + .seconds(1), repeating: 1)
+        aQueueTimer.activate()
+        
+        if operationQueue.isSuspended {
+            operationQueue.isSuspended = false
+        }
+    }
+    
+    private func timerEventHandler() -> DispatchWorkItem {
+        let workItem = DispatchWorkItem {[weak self] in
+                guard let weakSelf = self else {
+                    return
+                }
+            
+            logger.notice("Gateway timer tick.")
+            if weakSelf.queuedCalls.isEmpty {
+                
+                return
+            }
+            
+            let nextItem = weakSelf.queuedCalls.removeFirst()
+            weakSelf.operationQueue.addOperation {
+                nextItem()
+            }
+        }
+        
+        return workItem
+    }
+    
+    private func stopMessagesTimer() {
+        logger.notice(#function)
+        
+        if let timer = self.queueTimer,
+           !timer.isCancelled {
+            timer.cancel()
+        }
+        
+        self.queueTimer = nil
     }
     
     //MARK: - Topic
@@ -157,7 +248,7 @@ class MobileGatewayService  {
         let topicName = topic.rawValue
         let ownerId = currentOwnerId
         
-        let toReturn = "\(topicName)-prod/\(ownerId)/\(clientId)"
+        let toReturn = "\(topicName)/\(ownerId)/\(clientId)"
         return toReturn
     }
     
@@ -167,46 +258,111 @@ class MobileGatewayService  {
 
 extension MobileGatewayService:TagPacketsSender {
     func sendPacketsInfo(_ info:[TagPacketData]?) {
-            guard let topicToPublish = getTopicString(topic: .data) else {
+        
+        if let source = self.locationSource, let lastLoc = source.getLocation() {
+            self.lastKnownLoction = lastLoc
+        }
+        
+        if info == nil {
+            return
+        }
+        
+        let sendMessageOp = BlockOperation(block: {[weak self] in
+            
+            #if DEBUG
+            if let queue = OperationQueue.current,
+               queue == OperationQueue.main {
+                print("sendPacketsInfo  Called from the MainQueue")
+            }
+            #endif
+            
+            guard let weakSelf = self else {
                 return
             }
             
-            let gatewayPacketsData = GatewayPacketsData(location: nil, packets: info)
+            guard let infoToSend = info else {
+                let gatewayPacketsData = GatewayPacketsData(location: weakSelf.lastKnownLoction,
+                                                            packets: [TagPacketData]())
+                weakSelf.tryToSendGatewayPacketsData(gatewayPacketsData)
+                return
+            }
             
-            do {
-                let messageData = try GatewayDataEncoder.encode(gatewayPacketsData)
-                let messageString = try GatewayDataEncoder.encodeDataToString(messageData)
-//                #if DEBUG
-//                var debugStr = ""
-//                let jsonTransObject = try JSONSerialization.jsonObject(with: messageData,
-//                                                                       options: .fragmentsAllowed)
-//
-//                let jsonDataPretty = try JSONSerialization.data(withJSONObject: jsonTransObject,
-//                                                                options: .prettyPrinted)
-//                if let prettyString = String(data: jsonDataPretty, encoding: .utf8) {
-//                    debugStr.append("\(prettyString),\n")
-//                }
-//                print("MobileGatewayService sendPacketsInfo: \(debugStr)")
-//                #endif
-                try mqttClient?.sendMessage(messageString, topic: topicToPublish)
-                sendEventSignal?()
+            if weakSelf.sequenceIdCounter == kSequenceIdMax {
+                weakSelf.sequenceIdCounter = 0
             }
-            catch {
-                print("MobileGatewayService sendPacketsInfo. Error sending message:\(error)")
+            
+            let infosWithAddedSequenceId:[TagPacketData] = infoToSend.map { input in
+                
+                weakSelf.sequenceIdCounter += 1
+                let result:TagPacketData = input.fromOtherPacketDataWithSequenceId(weakSelf.sequenceIdCounter)
+                return result
             }
+            
+            let gatewayPacketsData = GatewayPacketsData(location: weakSelf.lastKnownLoction, packets: infosWithAddedSequenceId)
+            
+            weakSelf.tryToSendGatewayPacketsData(gatewayPacketsData)
+            
+        })
+        
+        operationQueue.addOperation(sendMessageOp)
+    }
+    
+    private func tryToSendGatewayPacketsData(_ packetsData:GatewayPacketsData) {
+        
+        guard gatewayAccessToken == nil else {
+            return
         }
+        
+        guard let topicToPublish = self.getTopicString(topic: .data),
+              let client = self.mqttClient else {
+            logger.notice(" - No Topic or mqttClient to send packets.")
+            return
+        }
+        
+        if client.connectionState.lowercased() != "connected" {
+            logger.notice("Will skip message sending: Client is not connected")
+            return
+        }
+            
+        do {
+            let messageData = try GatewayDataEncoder.encode(packetsData)
+            let messageString = try GatewayDataEncoder.encodeDataToString(messageData)
+            
+            self.queuedCalls.append  {[weak client] in
+                guard let mqttClient = client, mqttClient.connectionState.lowercased() == "connected" else {
+                    return
+                }
+                do {
+                    logger.notice("actual send Payloads to topic: \(topicToPublish) Message: '\(messageString)'")
+                    try mqttClient.sendMessage(messageString, topic: topicToPublish)
+                }
+                catch {
+                    logger.warning(" tryToSendGatewayPacketsData. mqttClient  Error sending message: \(error)")
+                }
+            }
+            
+        }
+        catch {
+            logger.notice("\(#function) Error sending message with encoding:\(error)")
+        }
+    }
 }
 
 
 //MARK: - MQTTClientDelegate
 extension MobileGatewayService:MQTTClientDelegate {
     func mqttClientDidConnect() {
+        
+        startMessagesTimer()
+        self.gatewayAccessToken = nil
         isConnecting = false
+        _statusPassThroughSubject.send("Connected")
         self.isConnected = true
         didConnectCompletion?(true)
     }
     
     func mqttClientDidDisconnect() {
+        _statusPassThroughSubject.send("Disconnected")
         isConnecting = false
         self.isConnected = false
         self.isConnected = false
@@ -215,7 +371,11 @@ extension MobileGatewayService:MQTTClientDelegate {
     }
     
     func mqttClientDidEncounterError(_ error: Error) {
+        #if DEBUG
         print("MobileGatewayService mqttClientDidEncounterError() Error:\(error)")
+        #endif
+        _statusPassThroughSubject.send("mqtt error: \(error.localizedDescription)")
+        
         isConnecting = false
         self.isConnected = false
         self.isConnected = false
@@ -226,6 +386,7 @@ extension MobileGatewayService:MQTTClientDelegate {
 //MARK: -
 extension MQTTEndpoint {
     static var defaultEndpoint:MQTTEndpoint {
-        MQTTEndpoint(host: "mqttv2.wiliot.com", port: 8883)
+        MQTTEndpoint(host: "mqtt.us-east-2.test.wiliot.cloud",//"mqtt.us-east-2.prod.wiliot.cloud",
+                     port: 1883)
     }
 }

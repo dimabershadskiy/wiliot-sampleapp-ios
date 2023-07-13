@@ -8,21 +8,47 @@ import Combine
 
 fileprivate let kCentralManagerUIDString = "com.wiliot.BLEcentralManager.uid"
 
-fileprivate typealias TailIdAndMilliseconds = (id:String, millis:TimeInterval)
+let kServiceUUIDString = "AFFD"
+let kBridgePayloadsUUIDString = "FCC6"
+fileprivate let kRepeatingPacketTimeout:TimeInterval = 3000
+fileprivate let kRepeatingPixelPacketTimeout:TimeInterval = 3000
+
 
 class BLEService {
+
+    
+    var isBLEScanningPublisher:AnyPublisher<Bool, Never> {
+        return _isBLEScanningPublisher.eraseToAnyPublisher()
+    }
+    
+    var isBLEScanning:Bool = false
+    
+    var scanStatePublisher:AnyPublisher<(CBManagerState, String), Never> {
+        return _scanStatePublisher.eraseToAnyPublisher()
+    }
+    
     
     private struct K {
-
+        static let eddystoneServiceuid = "FEAA"
+        static let wiliotManufactureID = "0500"
         static let serviceDataKey = "kCBAdvDataServiceData"
         static let manufacturerDataKey = "kCBAdvDataManufacturerData"
-        static let wiliotServiceuid = "FDAF" //"AFFD"
-
+        static let wiliotServiceuid = "FDAF"
+        static let embeddedGatewayServiceUID = kServiceUUIDString //"AFFD"
+        static let wiliotBridgeServicUUID = kBridgePayloadsUUIDString
+        static let d2p22UID = "05AF"
+        static let connectableModeBridgeUUID = "180A"
     }
     
     private struct CBUUIDS {
         static let wiliotCBUUID = CBUUID(string: K.wiliotServiceuid)
+        static let wiliotEmbeddedGWCBUUID = CBUUID(string: K.embeddedGatewayServiceUID)
+        static let wiliotBridgeCBUUID = CBUUID(string: K.wiliotBridgeServicUUID)
+        static let eddystoneCBUUID = CBUUID(string: K.eddystoneServiceuid)
+        static let d2P22UUID = CBUUID(string: K.d2p22UID)
+        static let connectableBridgeUUID = CBUUID(string: K.connectableModeBridgeUUID)
     }
+    
     
     private(set) var isInBackgroundMode:Bool = false
     
@@ -36,9 +62,11 @@ class BLEService {
                                                                 queue: bleQueue,
                                                                 options:bleCentralManagerOptions)
     
-    
-    private lazy var currentScannedUIDs:[UUID:TailIdAndMilliseconds] = [:]
-    
+    private let dispatchSchedulerQueue:DispatchQueue = DispatchQueue(label: "com.Wiliot.BLEService.scheduler.queue")
+    private lazy var currentScannedUIDs:[String: TimeInterval] = [:]
+    private lazy var _scanStatePublisher:PassthroughSubject<(CBManagerState, String) , Never> = .init()
+    private lazy var _isBLEScanningPublisher:PassthroughSubject<Bool, Never> = .init()
+    private var currentBLEState:CBManagerState = .unknown
     private lazy var sideInfoIDs:[String:TimeInterval] = [:]
     private var currentPendingpayload:Data?
     private lazy var cleanupQueue:OperationQueue = {
@@ -50,6 +78,7 @@ class BLEService {
     var packetPublisher:AnyPublisher<BLEPacket, Never> {
         _packetPublisher.eraseToAnyPublisher()
     }
+    
     private lazy var _packetPublisher:PassthroughSubject<BLEPacket,Never> = .init()
        
     deinit {
@@ -95,27 +124,44 @@ class BLEService {
     //MARK: - Private
     private func startScanningPeripherals() {
         
-        let uid = CBUUIDS.wiliotCBUUID
-
-        let scanOpts = [CBCentralManagerScanOptionAllowDuplicatesKey: NSNumber(value: true)]
-        let services:[CBUUID]? = isInBackgroundMode ? [uid] : nil
         
+        let wiliotFDAFuid = CBUUIDS.wiliotCBUUID
+        let wiliotBridgeFCC6uid = CBUUIDS.wiliotBridgeCBUUID
+        let d2p22UID = CBUUIDS.d2P22UUID
+        let connectableCBuuuid = CBUUIDS.connectableBridgeUUID
+        let scanOpts = [CBCentralManagerScanOptionAllowDuplicatesKey: NSNumber(value: true)]
+        let services:[CBUUID]? = isInBackgroundMode ? [wiliotFDAFuid, d2p22UID, wiliotBridgeFCC6uid, connectableCBuuuid] : nil
+
+        
+        defer {
+            isBLEScanning = centralManager.isScanning
+            _isBLEScanningPublisher.send(isBLEScanning)
+        }
         
         if centralManager.state == .poweredOn {
             if centralManager.delegate == nil {
                 centralManager.delegate = self.bleDelegate
             }
             else {
+                //print("\(self) \(#function) - BLEScanner STARTing Scanning (services: \(services?.count ?? 0)")
                 if centralManager.isScanning {
                     return
                 }
+                #if DEBUG
+                print(" - BLEService \(#function) - BLEScanner STARTing Scanning (services: \(services?.count ?? 0)")
+                #endif
+                
                 centralManager.scanForPeripherals(withServices: services, options: scanOpts)
-               
+                
+                self.currentBLEState = .unknown
+                _scanStatePublisher.send((CBManagerState.unknown, "scan started"))
             }
         }
         else {
+            #if DEBUG
+            print(" - BLEService \(#function) - BLEScanner Scanning NOT started:  \(centralManager.stateString)")
+            #endif
             
-            print("\(self) \(#function) - BLEScanner Scanning NOT started:  \(centralManager.stateString)")
             if centralManager.delegate == nil {
                 centralManager.delegate = self.bleDelegate
             }
@@ -123,17 +169,42 @@ class BLEService {
     }
     
     private func updateCurrentPackets(with uid:UUID, rssi:Int, advData:[String:Any]) {
-
+        
         let currentTimeInterval = Date().milisecondsFrom1970()
         
         var neededData:Data?
+        var isManufacturer = false
         
-        if let serviceData = advData[K.serviceDataKey] as? [CBUUID: Any] {
+        if let manufacturerData = advData[K.manufacturerDataKey] as? Data {
+            let manufactureIDString = manufacturerData.getManufacturerIdString()
+            
+            if manufactureIDString == K.wiliotManufactureID { //"0500"
+                neededData = manufacturerData
+            }
+            isManufacturer = true
+        }
+        else if let serviceData = advData[K.serviceDataKey] as? [CBUUID: Any] {
             
             if let servData = serviceData[CBUUIDS.wiliotCBUUID] as? Data {
                 
-                if let prefixData = Data(hexString: K.wiliotServiceuid) {
-                    let data = prefixData + servData
+                
+                if let prefixData = Data(hexString: K.embeddedGatewayServiceUID) { //add "AFFD" as prefix
+                    let dataWithAFFDPrefix = prefixData + servData
+                    neededData = dataWithAFFDPrefix
+                }
+            }
+            else if let servDataFromDridge = serviceData[CBUUIDS.wiliotBridgeCBUUID] as? Data {
+                // add prefix FCC6
+                let prefixData = Data([UInt8(0xFC), UInt8(0xC6)])
+                let dataWithFCC6Prefix = prefixData + servDataFromDridge
+                neededData = dataWithFCC6Prefix
+            }
+            else if let servDataEddystone = serviceData[CBUUIDS.eddystoneCBUUID] as? Data {
+                neededData = servDataEddystone
+            }
+            else if let servDataD2P22 = serviceData[CBUUIDS.d2P22UUID] as? Data {
+                if let prefixData05AF = Data(hexString: K.d2p22UID) {
+                    let data = prefixData05AF + servDataD2P22
                     neededData = data
                 }
             }
@@ -143,15 +214,19 @@ class BLEService {
             return
         }
         
-        var makeNewPacket = false
+        if BeaconDataReader.isBeaconDataGWtoBridgeMessage(payloadData) {
+            return
+        }
+        
         var makeNewSideInfoPacket = false
         let last4BytesId = payloadData.suffix(4).hexEncodedString(options: .upperCase)
+        let sideInfoKey = last4BytesId+uid.uuidString
         
-        if Data(payloadData.subdata(in: 0..<5)).hexEncodedString() == "FDAF0000EC".lowercased() {
-            if let time = sideInfoIDs[last4BytesId] {
-                let millisecondsPassed = currentTimeInterval - time
-                //print(" - milliseconds passed: \(millisecondsPassed)")
-                if millisecondsPassed < 200 {
+        if !isManufacturer, BeaconDataReader.isBeaconDataSideInfoPacket(payloadData) {
+            if let time = sideInfoIDs[sideInfoKey] {
+                
+                let timeDiff = currentTimeInterval - time
+                if timeDiff < kRepeatingPacketTimeout {
                     return
                 }
             }
@@ -162,31 +237,44 @@ class BLEService {
         //Side Info from Bridges
         
         if makeNewSideInfoPacket {
+            sideInfoIDs[sideInfoKey] = currentTimeInterval
             
-            sideInfoIDs[last4BytesId] = currentTimeInterval
-            
-            let blePacket = BLEPacket(isManufacturer: false, uid: uid, rssi: rssi, data: payloadData)
+//            printDebug(" - BLEService sideInfo payload: \(payloadData.hexEncodedString(options: .upperCase))")
+            let blePacket = BLEPacket(isManufacturer: isManufacturer, uid: uid, rssi: rssi, data: payloadData, timeStamp: currentTimeInterval)
             _packetPublisher.send(blePacket)
-
-            DispatchQueue.global(qos: .default).asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            
+            
+            //postpone a cleanup
+            dispatchSchedulerQueue.asyncAfter(deadline: .now() + .milliseconds(Int(kRepeatingPacketTimeout))) { [weak self] in
                 guard let weakSelf = self else {
                     return
                 }
                 
-                weakSelf.cleanupQueue.addOperation {[weak self] in
-                    self?.sideInfoIDs[last4BytesId] = nil
+                weakSelf.cleanupQueue.addOperation {[weak weakSelf] in
+//                    weakSelf?.sideInfoIDs[sideInfoKey] = nil
+                    weakSelf?.sideInfoIDs.removeValue(forKey: sideInfoKey)
                 }
             }
             return
         }
-    
+        
+        var takeTimeoutIntoAccount = true
+        if BeaconDataReader.isBeaconDataBridgeToGWmessage(payloadData) {
+//            printDebug(" - Brg to GW. TimeStamp: \(currentTimeInterval), hex: \(payloadData.wiliotEdgeDeviceMACstring)")
+            takeTimeoutIntoAccount = false
+        }
+        
+        
         //
-        if let existingInfo = currentScannedUIDs[uid] {
-            if existingInfo.id == last4BytesId {
-                //detect 200 milliseconds
-                let timeScannedBefore:TimeInterval = existingInfo.millis
-                let millisecondsFromLastPacket = currentTimeInterval - timeScannedBefore
-                if millisecondsFromLastPacket < 300 {
+        
+        var makeNewPacket = false
+        let tagPacketKey:String = last4BytesId + uid.uuidString
+        
+        if let timeInterval = currentScannedUIDs[tagPacketKey] {
+            
+                //detect 3000 milliseconds
+                
+                if currentTimeInterval - timeInterval < kRepeatingPixelPacketTimeout {
                     //repeated packet transmission
                     return
                 }
@@ -194,11 +282,6 @@ class BLEService {
                     // new BLE packet
                     makeNewPacket = true
                 }
-            }
-            else {
-                //new BLE packet
-                makeNewPacket = true
-            }
         }
         else {
             //new BLE packet
@@ -208,8 +291,12 @@ class BLEService {
         
         
         if makeNewPacket {
-            currentScannedUIDs[uid] = (id:last4BytesId, millis:currentTimeInterval)
-            let blePacket = BLEPacket(isManufacturer: false, uid: uid, rssi: rssi, data: payloadData)
+            if takeTimeoutIntoAccount {
+                currentScannedUIDs[tagPacketKey] = (currentTimeInterval)
+
+            }
+            
+            let blePacket = BLEPacket(isManufacturer: isManufacturer, uid: uid, rssi: rssi, data: payloadData, timeStamp: currentTimeInterval)
             _packetPublisher.send(blePacket)
         }
     }
@@ -243,6 +330,9 @@ extension BLEService : BLECentralDelegateTarget {
         default:
             fatalError("BLEService Unhendled BLE CentralManager State")
         }
+        
+        self.currentBLEState = state
+        _scanStatePublisher.send((state, ""))
     }
     
     fileprivate func centralManager(_ central: CBCentralManager, willRestoreState dict: [String : Any]) {
@@ -250,23 +340,18 @@ extension BLEService : BLECentralDelegateTarget {
     }
     
     fileprivate func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-//        if advertisementData["kCBAdvDataLocalName"] != nil {
-//            return
-//        }
         
-        if (advertisementData["kCBAdvDataIsConnectable"] as? Int) ?? 0 != 0 {
+        if (advertisementData[CBAdvertisementDataIsConnectable] as? Int) ?? 0 != 0 {
             return
         }
         
-        if advertisementData[CBAdvertisementDataServiceDataKey] == nil && advertisementData[CBAdvertisementDataManufacturerDataKey] == nil {
-            return
+        if advertisementData[CBAdvertisementDataServiceDataKey] == nil {
+            if advertisementData[CBAdvertisementDataManufacturerDataKey] == nil {
+                return
+            }
         }
-     
-        
-        //filter duplicate channels receiving same transmission
         
         let peripheralUID = peripheral.identifier
-        
         
         updateCurrentPackets(with: peripheralUID,
                              rssi: Int(RSSI.int32Value),

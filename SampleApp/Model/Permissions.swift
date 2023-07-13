@@ -10,25 +10,38 @@ import CoreLocation
 import CoreBluetooth
 import Combine
 
-class Permissions:ObservableObject {
-    var isLocationPermissionsErrorNeedManualSetup:Bool = false {
-        willSet {
-            objectWillChange.send()
+class Permissions {
+    
+    private(set) var isLocationPermissionsErrorNeedManualSetup:Bool = false {
+        didSet {
+            if oldValue != isLocationPermissionsErrorNeedManualSetup, isLocationPermissionsErrorNeedManualSetup == true {
+                locationCanBeUsed = false
+                bluetoothCanBeUsed = false
+                updateGatewayPermissionsGranted() //_gatewayPermissionsGrantedPublisher will send event with 'FALSE'
+            }
         }
     }
     
-    var locationAlwaysGranded:Bool = false
-    var locationWhenInUseGranted:Bool = false
-    var locationCanBeUsed:Bool = false {
-        willSet {
-            objectWillChange.send()
-        }
-    }
-    
-    @Published var bluetoothCanBeUsed:Bool = false
+    private(set) var locationAlwaysGranded:Bool = false
+    private(set) var locationWhenInUseGranted:Bool = false
+    private(set) var locationCanBeUsed:Bool = false
+    private(set) var bluetoothCanBeUsed:Bool = false
     
     /// to be binded in the toggling the gateway mode
-    @Published private(set) var gatewayPermissionsGranted:Bool = false
+    private(set) var gatewayPermissionsGranted:Bool = false {
+        didSet {
+            let newValue = gatewayPermissionsGranted
+            if oldValue != newValue {
+                _gatewayPermissionsGrantedPublisher.send(newValue)
+            }
+        }
+    }
+    
+    var gatewayPermissionsPublisher:AnyPublisher<Bool, Never> {
+        return _gatewayPermissionsGrantedPublisher.eraseToAnyPublisher()
+    }
+    
+    private lazy var _gatewayPermissionsGrantedPublisher:PassthroughSubject<Bool, Never> = .init()
     
     var pLocationCanBeUsed:Bool {
         locationAlwaysGranded || locationWhenInUseGranted
@@ -40,11 +53,6 @@ class Permissions:ObservableObject {
     private lazy var cbDelegate:CBCentralManagerDelegateObject = CBCentralManagerDelegateObject()
     private lazy var locDelegate:CBLocationManagerDelegateObject = CBLocationManagerDelegateObject()
     
-    
-    init() {
-        
-        checkAuthStatus()
-    }
     
     //MARK: - Initialization
     convenience init(bluetoothManager:CBCentralManager? = nil, locationManager:CLLocationManager? = nil) {
@@ -94,9 +102,6 @@ class Permissions:ObservableObject {
             locationWhenInUseGranted = false
         }
         
-        locationCanBeUsed = pLocationCanBeUsed
-        
-        
         let btState = CBCentralManager.authorization
         
         switch btState {
@@ -115,14 +120,25 @@ class Permissions:ObservableObject {
         updateGatewayPermissionsGranted()
     }
     
-    func requestBluetoothAuth() {
+    func requestPermissions() {
+
+        if !bluetoothCanBeUsed {
+            requestBluetoothAuth()
+        }
+        
+        if !locationCanBeUsed {
+            requestLocationAuth()
+        }
+    }
+    
+    private func requestBluetoothAuth() {
         cbDelegate.delegate = self
         
         cbManager.delegate = cbDelegate
         cbManager.scanForPeripherals(withServices: nil)
     }
     
-    func requestLocationAuth() {
+    private func requestLocationAuth() {
         
         
         let status = locationManager.authorizationStatus
@@ -131,7 +147,7 @@ class Permissions:ObservableObject {
         case .notDetermined:
             locDelegate.delegate = self
             locationManager.delegate = locDelegate
-            locationManager.requestAlwaysAuthorization()
+            locationManager.requestWhenInUseAuthorization()
         case .restricted:
             isLocationPermissionsErrorNeedManualSetup = true
             return
@@ -143,13 +159,13 @@ class Permissions:ObservableObject {
         case .authorizedWhenInUse:
             locationManager.requestAlwaysAuthorization()
         @unknown default:
-            fatalError()
+            fatalError("Unhandled State of Location system authorization status")
         }
     }
     
     private func updateGatewayPermissionsGranted() {
+        locationCanBeUsed = locationAlwaysGranded || locationWhenInUseGranted
         gatewayPermissionsGranted = locationCanBeUsed && bluetoothCanBeUsed
-        
     }
 }
 
@@ -165,7 +181,7 @@ extension Permissions:CBCentralManagerStateDelegate {
         case .allowedAlways:
             self.bluetoothCanBeUsed = true
         @unknown default:
-            fatalError()
+            fatalError("Unhandled State of Bluetooth system authorization status")
         }
         
         updateGatewayPermissionsGranted()
