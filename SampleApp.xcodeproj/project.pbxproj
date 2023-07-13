@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C1862BB2A60587A008D0AE6 /* DataTaskResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1862BA2A60587A008D0AE6 /* DataTaskResponse.swift */; };
 		2C31500828D86BD5000A3183 /* BLEPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31500728D86BD5000A3183 /* BLEPacket.swift */; };
 		2C31500A28D86C7A000A3183 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31500928D86C7A000A3183 /* Data+Extension.swift */; };
 		2C31500C28D89E88000A3183 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31500B28D89E88000A3183 /* LocationService.swift */; };
@@ -42,6 +43,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2C1862BA2A60587A008D0AE6 /* DataTaskResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTaskResponse.swift; sourceTree = "<group>"; };
 		2C31500728D86BD5000A3183 /* BLEPacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEPacket.swift; sourceTree = "<group>"; };
 		2C31500928D86C7A000A3183 /* Data+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Extension.swift"; sourceTree = "<group>"; };
 		2C31500B28D89E88000A3183 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				2C8B5B3628D8531400BC45E8 /* NetworkProtocols.swift */,
 				2C8B5B3428D852D900BC45E8 /* NetworkService.swift */,
 				2C8B5B3828D853A000BC45E8 /* GatewayTokens.swift */,
+				2C1862BA2A60587A008D0AE6 /* DataTaskResponse.swift */,
 			);
 			path = NetwworkAPICalls;
 			sourceTree = "<group>";
@@ -327,6 +330,7 @@
 				2C31501428D8AD15000A3183 /* WeakObject.swift in Sources */,
 				2C8B5B3728D8531400BC45E8 /* NetworkProtocols.swift in Sources */,
 				2C31500C28D89E88000A3183 /* LocationService.swift in Sources */,
+				2C1862BB2A60587A008D0AE6 /* DataTaskResponse.swift in Sources */,
 				2C8B5B3128D84FE900BC45E8 /* MobileGatewayService.swift in Sources */,
 				2C8B5B4228D85B5E00BC45E8 /* GatewayPacketsData.swift in Sources */,
 				2C8B5B3F28D85B3100BC45E8 /* Errors.swift in Sources */,

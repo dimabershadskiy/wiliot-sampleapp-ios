@@ -7,8 +7,6 @@ import Foundation
 fileprivate let oauthBase = "https://api.us-east-2.test.wiliot.cloud" //"https://api.us-east-2.prod.wiliot.cloud"
 
 
-let kTempTokenString = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjFJbThxS1hTcTk2a2czZTc2RndaNEt4UThTcyJ9.eyJhdWQiOiIyMWZmZDQ0NC03NmUyLTRjM2YtOTMxNy0zOGM1ZmRkYjE2OWQiLCJleHAiOjE2ODkyODU3NTcsImlhdCI6MTY4OTI0MjU1NywiaXNzIjoiYWNtZS5jb20iLCJzdWIiOiI5ZDQ3NzFiNi00ZDNkLTQ5NGUtYTgzMS04MTBiZmIxMjI1YzIiLCJqdGkiOiJkZDBiODk1NC04YjlmLTRlN2QtYTAyYy05ZmRlZjg4ZTg0MGIiLCJhdXRoZW50aWNhdGlvblR5cGUiOiJQQVNTV09SRCIsImVtYWlsIjoiaXZhbi55YXZvcmluQHdpbGlvdC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicHJlZmVycmVkX3VzZXJuYW1lIjoiaXZhbi55YXZvcmluQHdpbGlvdC5jb20iLCJhcHBsaWNhdGlvbklkIjoiMjFmZmQ0NDQtNzZlMi00YzNmLTkzMTctMzhjNWZkZGIxNjlkIiwicm9sZXMiOlsiYWRtaW4iLCJwcm9mZXNzaW9uYWwtc2VydmljZXMiLCJnYXRld2F5Il0sImF1dGhfdGltZSI6MTY4OTI0MjU1NywidGlkIjoiMzg2MjM1NjItMzQzNS0zNjMyLTY1MzgtNjUzNTYzMzUzNTY0IiwibGFzdE5hbWUiOiJXaWxpb3QiLCJmdWxsTmFtZSI6Ikl2YW4gV2lsaW90Iiwib3duZXJzIjp7IjM2NTMyMDM1NDIxOSI6eyJyb2xlcyI6WyJhZG1pbiJdfSwid2lsaW90MSI6eyJyb2xlcyI6WyJlZGl0b3IiXX0sIjMxODExMTExMjUxMCI6eyJyb2xlcyI6WyJhZG1pbiJdfSwiMzMzOTcxMTAxNzI2Ijp7InJvbGVzIjpbImFkbWluIl19LCJ3aWxpb3QiOnsicm9sZXMiOlsiYWRtaW4iXX0sIjk0NTY4MzcwODUzNyI6eyJyb2xlcyI6WyJhZG1pbiJdfSwiYXV0b3Rlc3QiOnsicm9sZXMiOlsiZWRpdG9yIl19LCI0NTY3NzQ3MDgwNjciOnsicm9sZXMiOlsiYWRtaW4iXX0sIjI1NDM1MDg1MzY0NiI6eyJyb2xlcyI6WyJhZG1pbiJdfSwiNjUwNzkzOTg3NDEyIjp7InJvbGVzIjpbImFkbWluIl19fSwiZmlyc3ROYW1lIjoiSXZhbiIsInVzZXJuYW1lIjoiaXZhbi55YXZvcmluQHdpbGlvdC5jb20ifQ.zKcpJJp1WaNEtkTWxPJCr-2a94KgJ1evt4_cYfyoQLIKZoJZVFwILONzDUHqAPu7f6Q_N9o9gQejOmTnBFxzPzpK8s7-5xZKESUUdlV8Aeahj4NbcmKtbQS9IHAWVJq9MRVrFpp4ycq23imyq2NjDObSaCW2evasn0zEYPZHepDAUw2R99q0xeR2TOVQPa17hu3ovJiFXstkxjoDGJ8IgTD5EQaB7TNJwpATbB9Fz2hjNDWlIHvRzNgio7d5ZiQ8WQ4wfcZC26H3Vk9YZPeSX1nDOha-iNsJZPXpw6VSq_ZR2UrBNM3WnIG1G3urAeR_xKnRWyanIpEMAFzfzk426w"
-
 enum APIPath {
     case receiveAuthToken
     case registerGW(ownerId: String, gatewayId: String)
@@ -78,22 +76,26 @@ class NetworkService {
         return request
     }
     
-    private func handleBadResponseScenario(error:Error?, data:Data?, response:URLResponse?) -> Error? {
-        if let anError = error {
+    private func handleBadResponseScenario(_ response:DataTaskResponse) -> Error? {
+        if let anError = response.error {
             
             return anError
         }
         
-        guard let response = response,
-              let data = data,
-              let httpResponse = response as? HTTPURLResponse else {
+        
+        guard let urlResponse = response.urlResponse,
+              let data = response.data,
+              let httpResponse = urlResponse as? HTTPURLResponse else {
             return ValueReadingError.invalidValue("Wrong response received")
             
         }
         let code = httpResponse.statusCode
         
         if code != 200 {
-            print("Status Code: \(code) for \(response.url!.path)")
+            #if DEBUG
+            print("Status Code: \(code) for \(urlResponse.url?.path ?? "--")")
+            #endif
+            
             if code == 401 {
                 return BadServerResponse.badStatusCode(httpResponse.statusCode, "Unauthorized. check tokens..")
             }
@@ -133,36 +135,38 @@ extension NetworkService : AuthTokenRequester {
             guard let self = self else {
                 return
             }
+            let response = DataTaskResponse(data: data, urlResponse: urlResponse, error: error)
             
-            if let error = self.handleBadResponseScenario(error: error, data: data, response: urlResponse) {
-                #if DEBUG
-                completion(.success(kTempTokenString))
-                #else
-                completion( .failure(error))
-                #endif
-                self.tempTokenRequestDataTask = nil
-                return
-            }
-            
-            guard let responseData = data else {
-                completion( .failure(ValueReadingError.missingRequiredValue("No Auth Token response data")))
-                self.tempTokenRequestDataTask = nil
-                return
-            }
-
-            do {
-                
-                let authData = try JSONDecoder().decode(FusionAuthResponseModel.self, from: responseData)
-                completion( .success(authData.accessToken))
-            }
-            catch {
-                completion( .failure(error))
-            }
-            self.tempTokenRequestDataTask = nil
+            self.handleAuthTokenResponse(response, completionBlock: completion)
         }
         
         self.tempTokenRequestDataTask = authTokenRequestTask
         authTokenRequestTask.resume()
+    }
+    
+    private func handleAuthTokenResponse(_ response:DataTaskResponse, completionBlock completion: @escaping ((AuthTokenResult) -> ()) ) {
+        defer {
+            self.tempTokenRequestDataTask = nil
+        }
+        
+        if let error = self.handleBadResponseScenario(response) {
+            completion( .failure(error))
+            return
+        }
+        
+        guard let responseData = response.data else {
+            completion( .failure(ValueReadingError.missingRequiredValue("No Auth Token response data")))
+            return
+        }
+
+        do {
+            
+            let authData = try JSONDecoder().decode(FusionAuthResponseModel.self, from: responseData)
+            completion( .success(authData.accessToken))
+        }
+        catch {
+            completion( .failure(error))
+        }
     }
 }
 
@@ -199,13 +203,14 @@ extension NetworkService:GatewayRegistrator {
                 return
             }
             
-            if let error = self.handleBadResponseScenario(error: error, data: data, response: response) {
+            let dtResponse = DataTaskResponse(data: data, urlResponse: response, error: error)
+            if let error = self.handleBadResponseScenario(dtResponse) {
                 completion(.failure(error))
                 return
             }
             
             
-            guard let responseData = data else {
+            guard let responseData = dtResponse.data else {
                 completion( .failure(ValueReadingError.invalidValue("Wrong response received") ) )
                 return
             }
@@ -244,14 +249,14 @@ extension NetworkService:GatewayRegistrator {
             
             guard let self = self else { return }
             
-            if let error = self.handleBadResponseScenario(error: error,
-                                                          data: data,
-                                                          response:urlResponse) {
+            let dtResponse = DataTaskResponse(data: data, urlResponse: urlResponse, error: error)
+            
+            if let error = self.handleBadResponseScenario(dtResponse) {
                 completion (.failure(error))
                 return
             }
             
-            guard let responseData = data else {
+            guard let responseData = dtResponse.data else {
                 completion( .failure(ValueReadingError.missingRequiredValue("No Response Data")))
                 return
             }
