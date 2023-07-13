@@ -6,13 +6,14 @@
 //
 
 import Foundation
-import CocoaAsyncSocket
+import MqttCocoaAsyncSocket
 
 // MARK: - Interfaces
 
 public protocol CocoaMQTTSocketDelegate: AnyObject {
     func socketConnected(_ socket: CocoaMQTTSocketProtocol)
     func socket(_ socket: CocoaMQTTSocketProtocol, didReceive trust: SecTrust, completionHandler: @escaping (Bool) -> Swift.Void)
+    func socketUrlSession(_ socket: CocoaMQTTSocketProtocol, didReceiveTrust trust: SecTrust, didReceiveChallenge challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
     func socket(_ socket: CocoaMQTTSocketProtocol, didWriteDataWithTag tag: Int)
     func socket(_ socket: CocoaMQTTSocketProtocol, didRead data: Data, withTag tag: Int)
     func socketDidDisconnect(_ socket: CocoaMQTTSocketProtocol, withError err: Error?)
@@ -46,7 +47,7 @@ public class CocoaMQTTSocket: NSObject {
     /// Default is false
     public var allowUntrustCACertificate = false
     
-    fileprivate let reference = GCDAsyncSocket()
+    fileprivate let reference = MGCDAsyncSocket()
     fileprivate weak var delegate: CocoaMQTTSocketDelegate?
     
     public override init() { super.init() }
@@ -79,8 +80,8 @@ extension CocoaMQTTSocket: CocoaMQTTSocketProtocol {
     }
 }
 
-extension CocoaMQTTSocket: GCDAsyncSocketDelegate {
-    public func socket(_ sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
+extension CocoaMQTTSocket: MGCDAsyncSocketDelegate {
+    public func socket(_ sock: MGCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
         printInfo("Connected to \(host) : \(port)")
         
          #if os(iOS)
@@ -98,7 +99,7 @@ extension CocoaMQTTSocket: GCDAsyncSocketDelegate {
          if enableSSL {
              var setting = sslSettings ?? [:]
              if allowUntrustCACertificate {
-                 setting[GCDAsyncSocketManuallyEvaluateTrust as String] = NSNumber(value: true)
+                 setting[MGCDAsyncSocketManuallyEvaluateTrust as String] = NSNumber(value: true)
              }
              sock.startTLS(setting)
          } else {
@@ -106,7 +107,7 @@ extension CocoaMQTTSocket: GCDAsyncSocketDelegate {
          }
     }
 
-    public func socket(_ sock: GCDAsyncSocket, didReceive trust: SecTrust, completionHandler: @escaping (Bool) -> Swift.Void) {
+    public func socket(_ sock: MGCDAsyncSocket, didReceive trust: SecTrust, completionHandler: @escaping (Bool) -> Swift.Void) {
         if let theDelegate = delegate {
             theDelegate.socket(self, didReceive: trust, completionHandler: completionHandler)
         } else {
@@ -114,21 +115,21 @@ extension CocoaMQTTSocket: GCDAsyncSocketDelegate {
         }
     }
 
-    public func socketDidSecure(_ sock: GCDAsyncSocket) {
+    public func socketDidSecure(_ sock: MGCDAsyncSocket) {
         printDebug("socket did secure")
         delegate?.socketConnected(self)
     }
 
-    public func socket(_ sock: GCDAsyncSocket, didWriteDataWithTag tag: Int) {
+    public func socket(_ sock: MGCDAsyncSocket, didWriteDataWithTag tag: Int) {
         printDebug("socket wrote data \(tag)")
         delegate?.socket(self, didWriteDataWithTag: tag)
     }
 
-    public func socket(_ sock: GCDAsyncSocket, didRead data: Data, withTag tag: Int) {
+    public func socket(_ sock: MGCDAsyncSocket, didRead data: Data, withTag tag: Int) {
         delegate?.socket(self, didRead: data, withTag: tag)
     }
 
-    public func socketDidDisconnect(_ sock: GCDAsyncSocket, withError err: Error?) {
+    public func socketDidDisconnect(_ sock: MGCDAsyncSocket, withError err: Error?) {
         printDebug("socket disconnected")
         delegate?.socketDidDisconnect(self, withError: err)
     }
