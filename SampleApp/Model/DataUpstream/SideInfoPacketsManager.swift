@@ -27,6 +27,8 @@ final class SideInfoPacketsManager : SideInfoPacketsHandling, BridgePayloadsRece
     private var packetsToBeSent1:[TagPacketData] = []
     private var packetsToBeSent2:[TagPacketData] = []
     
+    private var lastAppendedId:Data?
+    
     private var bridgeMessagePackets1:[BLEPacket] = []
     private var bridgeMessagePackets2:[BLEPacket] = []
     
@@ -130,7 +132,7 @@ final class SideInfoPacketsManager : SideInfoPacketsHandling, BridgePayloadsRece
         timerQueue.suspend()
         stopSendingTimer()
         timerQueue.resume()
-        
+        lastAppendedId = nil
         opQueue.cancelAllOperations()
     }
     
@@ -260,6 +262,13 @@ final class SideInfoPacketsManager : SideInfoPacketsHandling, BridgePayloadsRece
     }
     
     private func appendBridgeMessagesPacket(_ blePacket:BLEPacket) {
+        
+        let lvLastAppendedId = blePacket.data.suffix(5)
+        if self.lastAppendedId == lvLastAppendedId {
+            return
+        }
+        self.lastAppendedId = lvLastAppendedId
+        
         if isCollectingToFirstDataSourse {
             bridgeMessagePackets1.append(blePacket)
         }
