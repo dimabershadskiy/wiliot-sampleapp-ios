@@ -308,19 +308,26 @@ fileprivate let kConstantsPlistFileName = "SampleAuthConstants"
         let bleService = BLEService()
         self.bleService = bleService
         
-        var pacingObject:PacketsPacing?
-        
-        if let gwService = self.gatewayService {
-            let pacingService = PacketsPacingService(with: WeakObject(gwService))
-            pacingObject = pacingService
-            
-            gwService.setSendEventSignal {[weak self] in
-                self?._mqttSentMessagePublisher.send(())
-            }
-            gwService.locationSource = WeakObject(locService)
+        guard let gwService = self.gatewayService else {
+            return
         }
         
-        let bleManager = BLEPacketsManager(pacingReceiver: pacingObject)
+        let pacingService = PacketsPacingService(with: WeakObject(gwService))
+        let pacingObject:PacketsPacing = pacingService
+        
+        gwService.setSendEventSignal {[weak self] in
+            self?._mqttSentMessagePublisher.send(())
+        }
+        gwService.locationSource = WeakObject(locService)
+        
+        let sideInfoHandler = SideInfoPacketsManager(packetsSenderAgent: WeakObject(gwService), pacingReceiver: pacingObject)
+        
+        let nearbyBridgesUpdater = NearbyBridgesUpdater(bridgePayloadsSender: WeakObject(sideInfoHandler))
+        
+        let bleManager = BLEPacketsManager(pacingReceiver: pacingObject,
+                                           sideInfoPacketsHandler: sideInfoHandler,
+                                           bridgesUpdater: nearbyBridgesUpdater,
+                                           locationSource: WeakObject(locService))
         
         self.blePacketsmanager = bleManager
         bleManager.subscribeToBLEpacketsPublisher(publisher: bleService.packetPublisher)

@@ -34,3 +34,9 @@ extension WeakObject:LocationSource where T:LocationSource {
         object?.getLocation()
     }
 }
+
+extension WeakObject :BridgePayloadsReceiving where T:BridgePayloadsReceiving {
+    func receiveBridgeMassagePayloadPacket(_ bridgeMessagePacket: BLEPacket) {
+        object?.receiveBridgeMassagePayloadPacket(bridgeMessagePacket)
+    }
+}

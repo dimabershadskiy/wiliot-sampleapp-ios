@@ -8,10 +8,20 @@ import Combine
 class BLEPacketsManager {
     private var cancellables:Set<AnyCancellable> = []
     
-    var pacingReceiver:PacketsPacing?
+    let pacingReceiver:PacketsPacing
+    let bridgesUpdater:NearbyBridgesUpdating
+    let locationSource:LocationSource
+    let sideInfoHandler:SideInfoPacketsHandling
     
-    init(pacingReceiver:PacketsPacing?) {
+    init(pacingReceiver:PacketsPacing,
+         sideInfoPacketsHandler:SideInfoPacketsHandling,
+         bridgesUpdater:NearbyBridgesUpdating,
+         locationSource:LocationSource) {
+        
         self.pacingReceiver = pacingReceiver
+        self.sideInfoHandler = sideInfoPacketsHandler
+        self.bridgesUpdater = bridgesUpdater
+        self.locationSource = locationSource
     }
     
     func subscribeToBLEpacketsPublisher(publisher:AnyPublisher<BLEPacket,Never>) {
@@ -26,11 +36,16 @@ class BLEPacketsManager {
     private func handleBLEPacket(_ packet:BLEPacket) {
         let data:Data = packet.data
         
-        if BeaconDataReader.isBeaconDataGWtoBridgeMessage(data) || BeaconDataReader.isBeaconDataBridgeToGWmessage(data) {
+        if BeaconDataReader.isBeaconDataGWtoBridgeMessage(data) {
             return
         }
         
-        handlePixelPacket(packet)
+        if BeaconDataReader.isBeaconDataBridgeToGWmessage(data) {
+            handleBridgeCommandPacket(packet)
+        }
+        else {
+            handlePixelPacket(packet)
+        }
     }
     
     private func handlePixelPacket(_ blePacket:BLEPacket) {
@@ -47,6 +62,17 @@ class BLEPacketsManager {
                             nfpkt: nil,
                             rssi: blePacket.rssi)
         
-        pacingReceiver?.receivePacketsByUUID([bleUUID : packet])
+        pacingReceiver.receivePacketsByUUID([bleUUID : packet])
+    }
+    
+    private func handleBridgeCommandPacket(_ packet:BLEPacket) {
+        //bridge to gateway command packets (e.g. config containing packet)
+        
+        var location:Location?
+        if let aLocation = locationSource.getLocation() {
+            location = aLocation
+        }
+        
+        bridgesUpdater.receiveBridgePackets([packet], location: location)
     }
 }
