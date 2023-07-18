@@ -29,14 +29,28 @@ extension WeakObject:GatewayRegistrator where T:GatewayRegistrator {
     }
 }
 
-extension WeakObject:LocationSource where T:LocationSource {
+extension WeakObject: LocationSource where T:LocationSource {
     func getLocation() -> Location? {
         object?.getLocation()
     }
 }
 
-extension WeakObject :BridgePayloadsReceiving where T:BridgePayloadsReceiving {
+extension WeakObject: BridgePayloadsReceiving where T:BridgePayloadsReceiving {
     func receiveBridgeMassagePayloadPacket(_ bridgeMessagePacket: BLEPacket) {
         object?.receiveBridgeMassagePayloadPacket(bridgeMessagePacket)
+    }
+}
+
+extension WeakObject: MQTTClientEventDelegate where T:MQTTClientEventDelegate {
+    func didPublishMessage() {
+        object?.didPublishMessage()
+    }
+    
+    func didReceivePong() {
+        object?.didReceivePong()
+    }
+    
+    func didPing() {
+        object?.didPing()
     }
 }

@@ -19,6 +19,12 @@ public protocol MQTTClientDelegate:AnyObject {
     func mqttClientDidEncounterError(_ error:Error)
 }
 
+public protocol MQTTClientEventDelegate {
+    func didPublishMessage()
+    func didReceivePong()
+    func didPing()
+}
+
 public enum MQTTClientError : Error, CaseIterable {
     case expiringToken
     case invalidTokenUsername
@@ -34,7 +40,8 @@ public final class MQTTClient {
     var connectionToken:String
     var endpoint:MQTTEndpoint
     weak var delegate:MQTTClientDelegate?
-    var cocoaMQTTDelegate:CocoaMQTTDelegateObject?
+    var eventDelegate:MQTTClientEventDelegate?
+    private var cocoaMQTTDelegate:CocoaMQTTDelegateObject?
     private(set) var connectionState:String = "Unknown"
     
     private var mqtt:CocoaMQTT?
@@ -55,7 +62,9 @@ public final class MQTTClient {
         self.connectionToken = connectionToken
         self.endpoint = endpoint
         self.delegate = delegate
-        self.cocoaMQTTDelegate = CocoaMQTTDelegateObject()
+        let eventObject = CocoaMQTTDelegateObject()
+        eventObject.target = self //weak ref
+        self.cocoaMQTTDelegate = eventObject
         try prepareMQTT()
     }
     
@@ -184,6 +193,7 @@ extension MQTTClient : CocoaMQTTDelegateObjectTarget {
     
     func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
 //        trace("didPublishMessage: \(message), id: \(id)")
+        self.eventDelegate?.didPublishMessage()
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didPublishComplete id: UInt16) {
@@ -236,10 +246,12 @@ extension MQTTClient : CocoaMQTTDelegateObjectTarget {
 
     func mqttDidPing(_ mqtt: CocoaMQTT) {
         trace("did ping")
+        self.eventDelegate?.didPing()
     }
     
     func mqttDidReceivePong(_ mqtt: CocoaMQTT) {
         trace("did recieve pong")
+        self.eventDelegate?.didReceivePong()
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didStateChangeTo state: CocoaMQTTConnState) {

@@ -29,7 +29,8 @@ fileprivate let kConstantsPlistFileName = "SampleAuthConstants"
         return _bleScannerPublisher.eraseToAnyPublisher()
     }
     
-    var messageSentActionPubliosher:AnyPublisher<Void,Never> {
+    //sends some text for better overall status understanding
+    var messageSentActionPublisher:AnyPublisher<String,Never> {
         return _mqttSentMessagePublisher.eraseToAnyPublisher()
     }
     
@@ -38,7 +39,7 @@ fileprivate let kConstantsPlistFileName = "SampleAuthConstants"
     private let _mqttConnectionPublisher:CurrentValueSubject<Bool, Never> = .init(false)
     private let _bleScannerPublisher:CurrentValueSubject<Float, Never> = .init(0.0)
     private let _permissionsPublisher:PassthroughSubject<Bool, Never> = .init()
-    private let _mqttSentMessagePublisher:PassthroughSubject<Void,Never> = .init()
+    private let _mqttSentMessagePublisher:PassthroughSubject<String,Never> = .init()
     
     private var appToken = ""
     private var ownerId = ""
@@ -315,8 +316,8 @@ fileprivate let kConstantsPlistFileName = "SampleAuthConstants"
         let pacingService = PacketsPacingService(with: WeakObject(gwService))
         let pacingObject:PacketsPacing = pacingService
         
-        gwService.setSendEventSignal {[weak self] in
-            self?._mqttSentMessagePublisher.send(())
+        gwService.setSendEventSignal {[weak self] messageString in
+            self?._mqttSentMessagePublisher.send((messageString))
         }
         gwService.locationSource = WeakObject(locService)
         
