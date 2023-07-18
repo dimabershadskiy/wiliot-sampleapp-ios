@@ -4,7 +4,7 @@ import Foundation
 
 
 
-fileprivate let oauthBase = "https://api.us-east-2.test.wiliot.cloud" //"https://api.us-east-2.prod.wiliot.cloud"
+fileprivate let oauthBase = "https://api.us-east-2.prod.wiliot.cloud"
 
 
 enum APIPath {

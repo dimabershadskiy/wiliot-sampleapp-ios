@@ -386,7 +386,7 @@ extension MobileGatewayService:MQTTClientDelegate {
 //MARK: -
 extension MQTTEndpoint {
     static var defaultEndpoint:MQTTEndpoint {
-        MQTTEndpoint(host: "mqtt.us-east-2.test.wiliot.cloud",//"mqtt.us-east-2.prod.wiliot.cloud",
+        MQTTEndpoint(host: "mqtt.us-east-2.prod.wiliot.cloud",
                      port: 1883)
     }
 }
