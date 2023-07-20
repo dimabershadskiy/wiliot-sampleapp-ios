@@ -17,7 +17,7 @@ class MobileGatewayService  {
     private(set) var gatewayAccessToken:String?
     private(set) var gatewayRefreshToken:String?
     ///send event outside for interested client (for debug or some UI updates like blink some indicator
-    private(set) var sendEventSignal:(()->())?
+    private(set) var sendEventSignal:((String)->())?
     var didConnectCompletion:((Bool) ->())?
     /// completio on Did Disconnect message from the MQTTClient
     var didStopCompletion:(()->())?
@@ -26,7 +26,7 @@ class MobileGatewayService  {
     var isConnected:Bool = false
     var locationSource:LocationSource?
     
-    let gatewayType: String = "Wiliot iPhone"
+    let gatewayType: String = "mobile"
     var statusPublisher:AnyPublisher<String?, Never> {
         return _statusPassThroughSubject.eraseToAnyPublisher()
     }
@@ -159,6 +159,9 @@ class MobileGatewayService  {
                                          connectionToken: gwAuthToken,
                                          endpoint: MQTTEndpoint.defaultEndpoint,
                                          delegate: self)
+            
+            client.eventDelegate = WeakObject(self) //this is optional, so put not into the initializer
+            
             let started = try client.start()
             self.mqttClient = client
             return started
@@ -177,7 +180,7 @@ class MobileGatewayService  {
         //self.mqttClient = nil
     }
     
-    func setSendEventSignal(_ eventHandler: @escaping(()->())) {
+    func setSendEventSignal(_ eventHandler: @escaping((String)->())) {
         self.sendEventSignal = eventHandler
     }
     
@@ -383,10 +386,24 @@ extension MobileGatewayService:MQTTClientDelegate {
     }
 }
 
+extension MobileGatewayService: MQTTClientEventDelegate {
+    func didPublishMessage() {
+        sendEventSignal?("didPublishMessage")
+    }
+    
+    func didReceivePong() {
+        sendEventSignal?("didReceivePong")
+    }
+    
+    func didPing() {
+        sendEventSignal?("didPing")
+    }
+}
+
 //MARK: -
 extension MQTTEndpoint {
     static var defaultEndpoint:MQTTEndpoint {
-        MQTTEndpoint(host: "mqtt.us-east-2.test.wiliot.cloud",//"mqtt.us-east-2.prod.wiliot.cloud",
+        MQTTEndpoint(host: "mqtt.us-east-2.prod.wiliot.cloud",
                      port: 1883)
     }
 }
