@@ -328,9 +328,7 @@ extension MobileGatewayService:TagPacketsSender {
         }
             
         do {
-            let messageData = try GatewayDataEncoder.encode(packetsData)
-            let messageString = try GatewayDataEncoder.encodeDataToString(messageData)
-            
+            let messageString = try GatewayDataEncoder.tryEncodeToString(packetsData)
             self.queuedCalls.append  {[weak client] in
                 guard let mqttClient = client, mqttClient.connectionState.lowercased() == "connected" else {
                     return

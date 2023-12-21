@@ -15,15 +15,6 @@ class BeaconDataReader {
     private static var gatewayToBridgeFlagData =       Data(Array<UInt8>(arrayLiteral:0x00, 0x00, 0xED))
     private static var bridgeToGatewayFlagData:Data =  Data(Array<UInt8>(arrayLiteral:0x00, 0x00, 0xEE))
     
-    
-//    private enum PayloadFlag:String {
-//        case sensorData = "0000eb"
-//        case sideOnfo = "0000ec"
-//        case gatewayToBridgeMessage = "0000ed"
-//        case bridgeToGatewayMessage = "0000ee"
-//    }
-    
-    
     class func isBeaconDataSideInfoPacket(_ data:Data) -> Bool {
         
         if (isPacketFCC6(data) || isPacketAFFD(data)),
@@ -130,7 +121,7 @@ class BeaconDataReader {
         }
         return false
     }
-    
+    /// - Returns: Uppercased hex string
     class func bridgeMacAddressFrom(sideInfoData data:Data) -> String {
         let macAddressSubdata = bridgeMacAddressDataFrom(data)
         let macAddressStr = macAddressSubdata.hexEncodedString(options:.upperCase)
@@ -142,20 +133,6 @@ class BeaconDataReader {
         let macAddressSubdata = data.subdata(in: 5..<11)
         return macAddressSubdata
     }
-    
-    
-//    class func isBeaconDataBridgeWithSWVersion(_ data:Data) -> Bool {
-//        if isPacketFDAF(data) {
-//            let groupIdRange = 2..<5
-//            let groupIdData = data.subdata(in: groupIdRange)
-//            let groupIdString = groupIdData.hexEncodedString()
-//            if groupIdString == "0000eb" {
-//                return true
-//            }
-//            print(" - groupIdString: \(groupIdString)")
-//        }
-//        return false
-//    }
     
     class func bridgeSoftwareVersionFrom(_ data:Data) -> (major:String, minor:String, patch:String) {
         
@@ -215,25 +192,3 @@ class BeaconDataReader {
         return Int(uint8value)
     }
 }
-
-
-//extension BeaconDataReader {
-//    class func softwareVersionStringFromSoftwareVersionTuple(_ tuple:BridgeSoftwareVersionStringsTuple, separator:String = ".") -> String {
-//        let majorVersion = removeLeadingZeroFromString(tuple.major)
-//        let minorVersion = removeLeadingZeroFromString(tuple.minor)
-//        let patchVersion = removeLeadingZeroFromString(tuple.patch)
-//
-//        let versionStrings:[String] = [majorVersion, minorVersion, patchVersion]
-//
-//        return versionStrings.joined(separator: separator)
-//    }
-//
-//    class func removeLeadingZeroFromString(_ string:String) -> String {
-//        var toReturn = string
-//        if string.hasPrefix("0") {
-//            let suffix = string.suffix(1)
-//            toReturn = String(suffix)
-//        }
-//        return toReturn
-//    }
-//}

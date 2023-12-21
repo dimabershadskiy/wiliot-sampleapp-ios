@@ -13,9 +13,11 @@ struct TagPacketData : Encodable {
     var sequenceId: Int64?
     var nfpkt:Int?
     var rssi:Int?
-    var isSensor:Bool? //'true' for thirdParty glued packets otherwise - nil
+    var isSensor:Bool? //for thirdParty glued packets otherwise - nil
     var sensorServiceId:String? //for thirt party glued packets
     var sensorId:String? //for thirdparty glued packets
+    var isScrambled:Bool? //for thirdparty glued packets
+    var isEmbedded:Bool?
     
     enum CodingKeys: CodingKey {
         case payload
@@ -28,6 +30,8 @@ struct TagPacketData : Encodable {
         case isSensor
         case sensorServiceId
         case sensorId
+        case isScrambled
+        case isEmbedded
     }
     
     func encode(to encoder: Encoder) throws {
@@ -42,8 +46,11 @@ struct TagPacketData : Encodable {
         try container.encodeIfPresent(self.isSensor, forKey: .isSensor)
         try container.encodeIfPresent(self.sensorServiceId, forKey: .sensorServiceId)
         try container.encodeIfPresent(self.sensorId, forKey: .sensorId)
+        try container.encodeIfPresent(self.isScrambled, forKey: .isScrambled)
+        try container.encodeIfPresent(self.isEmbedded, forKey: .isEmbedded)
     }
 }
+
 
 extension TagPacketData {
     func fromOtherPacketDataWithSequenceId(_ sequenceId:Int64) -> TagPacketData {
@@ -56,6 +63,9 @@ extension TagPacketData {
                              rssi: self.rssi,
                              isSensor: self.isSensor,
                              sensorServiceId: self.sensorServiceId,
-                             sensorId: self.sensorId)
+                             sensorId: self.sensorId,
+                             isScrambled: self.isScrambled,
+                             isEmbedded: self.isEmbedded)
     }
 }
+
