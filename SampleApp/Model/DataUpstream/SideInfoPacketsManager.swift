@@ -47,14 +47,14 @@ final class SideInfoPacketsManager : SideInfoPacketsHandling, BridgePayloadsRece
     }()
     
     init(packetsSenderAgent:TagPacketsSender, pacingReceiver:PacketsPacing) {
-//        printDebug("+ SideInfoPacketsManager INIT -")
+
         self.tagPacketsSender = packetsSenderAgent
         self.pacingReceiver = pacingReceiver
         startSendingTimer()
     }
     
     deinit {
-//        printDebug("+ SideInfoPacketsManager Deinit +")
+
         opQueue.cancelAllOperations()
         stopSendingTimer()
         packetsToBeSent2.removeAll()
@@ -73,8 +73,6 @@ final class SideInfoPacketsManager : SideInfoPacketsHandling, BridgePayloadsRece
             }
             
             let sideInfoSuffixId = sideInfo.packetId
-            
-    //        printDebug(" SideInfoPacketsManager recieved sideInfo for suffixId: \(sideInfoSuffixId)")
             
             if let tagPackets = weakSelf.tagPacketsByTagSufixId[sideInfoSuffixId] {
                 if BeaconDataReader.isBeaconDataSideInfoThirdPartySensorInfo(sideInfo.data) {
@@ -98,12 +96,10 @@ final class SideInfoPacketsManager : SideInfoPacketsHandling, BridgePayloadsRece
                                                        nfpkt: nfpkt,
                                                        rssi: rssi)
                     
-                    //tagPacketsByTagSufixId[sideInfoSuffixId] = nil
                     weakSelf.appendGluedPacketData(gluedTagPacket)
                     gluedCount += 1
                 }
                 
-    //            printDebug(" SideInfoPacketsManager appending '\(gluedCount)' glued packets for suffixId: \(sideInfoSuffixId)")
                 weakSelf.coupledPacketIDs.insert(sideInfoSuffixId)
             }
         }
@@ -112,8 +108,7 @@ final class SideInfoPacketsManager : SideInfoPacketsHandling, BridgePayloadsRece
     }
     
     func receiveTagPacket(_ blePacket:BLEPacket) {
-//        printDebug(" SideInfoPacketsManager recieved Tag payload: \(blePacket.data.hexEncodedString(options: .upperCase)) - uuid: \(blePacket.uid.uuidString)")
-        
+
         let tagSuffixId = blePacket.packetId
         opQueue.addOperation {[weak self] in
             guard let weakSelf = self else {
