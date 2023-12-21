@@ -1,7 +1,7 @@
 PODS:
-  - CocoaMQTT (2.1.5):
-    - CocoaMQTT/Core (= 2.1.5)
-  - CocoaMQTT/Core (2.1.5):
+  - CocoaMQTT (2.1.6):
+    - CocoaMQTT/Core (= 2.1.6)
+  - CocoaMQTT/Core (2.1.6):
     - MqttCocoaAsyncSocket (~> 1.0.8)
   - JWTDecode (3.1.0)
   - MqttCocoaAsyncSocket (1.0.8)
@@ -17,10 +17,10 @@ SPEC REPOS:
     - MqttCocoaAsyncSocket
 
 SPEC CHECKSUMS:
-  CocoaMQTT: af1bd1e42f81b9f4f9dcf3a8990c42b7c00989b9
+  CocoaMQTT: 1f206228b29318eabdacad0c2e4e88575922c27a
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   MqttCocoaAsyncSocket: 77d3b74f76228dd5a05d1f9526eab101d415b30c
 
 PODFILE CHECKSUM: 057c0a469d70a53141124852d74cc240e3bf9310
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.14.3
