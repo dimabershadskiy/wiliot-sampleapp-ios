@@ -16,16 +16,20 @@ class LocationService {
     var lastLocation: CLLocation?
 
     deinit {
+        #if DEBUG
         print("+ LocationService deinit +")
+        #endif
     }
 
 }
 
 extension LocationService {
-
-    var currentLocation: CLLocation? {
+    
+    var currentLocation:CLLocation? {
         locationManager.location
     }
+    
+    
     func startLocationUpdates() {
         if locationManager.delegate == nil {
             locationManager.delegate = self.locDelegate
@@ -38,9 +42,10 @@ extension LocationService {
     }
 
     func stopLocationUpdates() {
-
+        #if DEBUG
         print("LocationService stopLocationUpdates ")
-
+        #endif
+        
         if locationManager.delegate == nil {
             locationManager.delegate = self.locDelegate
         }
@@ -77,24 +82,31 @@ extension LocationService {
         print("\(self) \(#function) Turning on ranging beacons...")
 
         if !CLLocationManager.locationServicesEnabled() {
+            #if DEBUG
             print("Couldn't turn on ranging: Location services are not enabled.")
+            #endif
             return
         }
 
         if !CLLocationManager.isRangingAvailable() {
+#if DEBUG
             print("Couldn't turn on ranging: Ranging is not available.")
+#endif
             return
         }
 
         if !manager.rangedBeaconConstraints.isEmpty {
+#if DEBUG
             print("Didn't turn on ranging: Ranging already on.")
+#endif
             return
         }
     }
 
     private func startedMonitoringForBeacons(manager: CLLocationManager) {
+        #if DEBUG
         print("\(self) \(#function) Turning on monitoring for beacons...")
-
+        
         if !CLLocationManager.locationServicesEnabled() {
             print("\(self) \(#function) Couldn't turn on monitoring: Location services are not enabled.")
             return
@@ -104,6 +116,19 @@ extension LocationService {
             print("\(self) \(#function) Couldn't turn on region monitoring: Region monitoring is not available for CLBeaconRegion class.")
             return
         }
+        #endif
+    }
+}
+
+//MARK: - LocationSource
+extension LocationService:LocationSource {
+    func getLocation() -> Location? {
+        guard let clLoc = (self.lastLocation ?? self.currentLocation), 
+              let aLocation = Location(geoLocation: clLoc) else {
+            return nil
+        }
+        
+        return aLocation
     }
 }
 
@@ -146,7 +171,9 @@ break
     }
 
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        #if DEBUG
         print(" -> did range beacons. in region <- ")
+        #endif
     }
 
     func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint) {
@@ -157,6 +184,7 @@ break
 
         let receivedUUIDS = Set(beacons.map({$0.uuid}))
         let intersection = Set(targetBeaconsUUIDs).intersection(receivedUUIDS)
+        
         if !intersection.isEmpty {
             print(" -> did range beacons. constraint(s): \(intersection.map({$0.uuidString})) <- ")
 
@@ -175,10 +203,9 @@ break
         default:
             break
         }
+        #if DEBUG
         print(" --> didDetermineState : \(readable) <--")
-        if state == .inside {
-
-        }
+        #endif
     }
 
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {

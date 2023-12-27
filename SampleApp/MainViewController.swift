@@ -7,58 +7,42 @@ import Combine
 
 class MainViewController: UIViewController {
 
-    var model: Model?
-
-    @IBOutlet weak var bluetoothIcon: UIImageView?
-    @IBOutlet weak var networkIconIcon: UIImageView?
-    @IBOutlet weak var statusLabel: UILabel?
-
-    private var cancellables: Set<AnyCancellable> = []
-
+    var model:Model?
+    
+    @IBOutlet private weak var bluetoothIcon:UIImageView?
+    @IBOutlet private weak var networkIconIcon:UIImageView?
+    @IBOutlet private weak var statusLabel:UILabel?
+    
+    @IBOutlet private weak var counterDidPublishMessageLabel:UILabel?
+    @IBOutlet private weak var counterDidPingMessageLabel:UILabel?
+    @IBOutlet private weak var counterDidReceivePongMessageLabel:UILabel?
+    
+    private var didPublishCounter:Int = 0 {
+        didSet {
+            counterDidPublishMessageLabel?.text = "\(didPublishCounter)"
+        }
+    }
+    
+    private var didPingCounter:Int = 0 {
+        didSet {
+            counterDidPingMessageLabel?.text = "\(didPingCounter)"
+        }
+    }
+    
+    private var didReceivePongCounter:Int = 0 {
+        didSet {
+            counterDidReceivePongMessageLabel?.text = "\(didReceivePongCounter)"
+        }
+    }
+    
+    private var cancellables:Set<AnyCancellable> = []
+    
     override func loadView() {
         super.loadView()
 
         if model == nil {
 
             let model = Model()
-
-            model.statusPublisher
-                .receive(on: DispatchQueue.main)
-                .sink {[unowned self] statusString in
-                    statusLabel?.text = statusString
-                }
-                .store(in: &cancellables)
-
-            model.connectionPublisher
-                .receive(on: DispatchQueue.main)
-                .sink {[weak self] isConnected in
-                    self?.handleConnectionStatus(isConnected)
-                }
-                .store(in: &cancellables)
-
-            model.bleActivityPublisher
-                .receive(on: DispatchQueue.main)
-                .sink(receiveValue: {[weak self] floatValue in
-                    self?.handleBLEactivityValue(floatValue)
-                })
-                .store(in: &cancellables)
-
-            model.permissionsPublisher
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] granted in
-                    if granted {
-                        self?.proceedWithBLEandNetworking()
-                    }
-                }
-                .store(in: &cancellables)
-
-            model.messageSentActionPubliosher
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] _ in
-                    self?.blinkNetworkingIcon()
-                }
-                .store(in: &cancellables)
-
             self.model = model
         }
     }
@@ -66,13 +50,52 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-
-        model?.checkAndRequestSystemPermissions()
+        
+        self.subscribeForModelUpdates()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
+        guard let model = self.model else {
+            return
+        }
+        
+        model.loadRequiredData()
+    }
+    
+    private func subscribeForModelUpdates() {
+        guard let model = self.model else {
+            return
+        }
+        
+        model.statusPublisher
+            .receive(on: DispatchQueue.main)
+            .sink {[unowned self] statusString in
+                statusLabel?.text = statusString
+            }
+            .store(in: &cancellables)
+        
+        model.connectionPublisher
+            .receive(on:DispatchQueue.main)
+            .sink {[weak self] isConnected in
+                self?.handleConnectionStatus(isConnected)
+            }
+            .store(in: &cancellables)
+        
+        model.bleActivityPublisher
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: {[weak self] floatValue in
+                self?.handleBLEactivityValue(floatValue)
+            })
+            .store(in: &cancellables)
+        
+        model.messageSentActionPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] eventMessageString in
+                self?.blinkNetworkingIcon()
+                self?.handleEventMessage(eventMessageString)
+            }
+            .store(in: &cancellables)
     }
 
     private func handleConnectionStatus(_ isConnected: Bool) {
@@ -101,21 +124,7 @@ class MainViewController: UIViewController {
             bluetoothIcon?.tintColor = .lightGray
         }
     }
-
-    private func proceedWithBLEandNetworking() {
-        model?.prepare {[weak self] in
-            guard let self = self,
-                  let aModel = self.model else {
-                    return
-                }
-
-            if aModel.canStart() {
-                aModel.start()
-
-            }
-        }
-    }
-
+    
     private func blinkNetworkingIcon() {
         statusLabel?.text = "sent Tags Info at: \(Date())"
 
@@ -130,4 +139,16 @@ class MainViewController: UIViewController {
         }
     }
 
+    private func handleEventMessage(_ message:String) {
+        switch message {
+        case "didPublishMessage":
+            self.didPublishCounter += 1
+        case "didPing":
+            self.didPingCounter += 1
+        case "didReceivePong":
+            self.didReceivePongCounter += 1
+        default:
+            break
+        }
+    }
 }

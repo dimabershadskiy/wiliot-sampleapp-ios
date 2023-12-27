@@ -30,7 +30,27 @@ public class MqttPublishProperties: NSObject {
     //3.3.2.3.9 Content Type
     public var contentType: String?
 
-
+    public init(
+        propertyLength: Int? = nil,
+        payloadFormatIndicator: PayloadFormatIndicator? = nil,
+        messageExpiryInterval: UInt32? = nil,
+        topicAlias: UInt16? = nil,
+        responseTopic: String? = nil,
+        correlation: String? = nil,
+        userProperty: [String: String]? = nil,
+        subscriptionIdentifier: UInt32? = nil,
+        contentType: String? = nil
+    ) {
+        self.propertyLength = propertyLength
+        self.payloadFormatIndicator = payloadFormatIndicator
+        self.messageExpiryInterval = messageExpiryInterval
+        self.topicAlias = topicAlias
+        self.responseTopic = responseTopic
+        self.correlationData = correlation?.bytesWithLength
+        self.userProperty = userProperty
+        self.subscriptionIdentifier = subscriptionIdentifier
+        self.contentType = contentType
+    }
 
     public var properties: [UInt8] {
         var properties = [UInt8]()
@@ -63,8 +83,9 @@ public class MqttPublishProperties: NSObject {
             }
         }
         //3.3.2.3.8 Subscription Identifier
-        if let subscriptionIdentifier = self.subscriptionIdentifier {
-            properties += getMQTTPropertyData(type: CocoaMQTTPropertyName.subscriptionIdentifier.rawValue, value: subscriptionIdentifier.byteArrayLittleEndian)
+        if let subscriptionIdentifier = self.subscriptionIdentifier,
+           let subscriptionIdentifier = beVariableByteInteger(subscriptionIdentifier) {
+            properties += getMQTTPropertyData(type: CocoaMQTTPropertyName.subscriptionIdentifier.rawValue, value: subscriptionIdentifier)
         }
         //3.3.2.3.9 Content Type
         if let contentType = self.contentType {

@@ -3,11 +3,11 @@
 
 import Foundation
 struct BLEPacket {
-    let isManufacturer: Bool
-    let uid: UUID
-    let rssi: Int
-    let data: Data
-    let timeStamp = Date().milisecondsFrom1970()
+    let isManufacturer:Bool
+    let uid:UUID
+    let rssi:Int
+    let data:Data
+    let timeStamp:Double
 }
 
 extension BLEPacket {

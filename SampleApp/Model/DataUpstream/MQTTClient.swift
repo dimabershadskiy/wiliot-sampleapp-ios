@@ -17,7 +17,13 @@ public protocol MQTTClientDelegate: AnyObject {
     func mqttClientDidEncounterError(_ error: Error)
 }
 
-public enum MQTTClientError: Error, CaseIterable {
+public protocol MQTTClientEventDelegate {
+    func didPublishMessage()
+    func didReceivePong()
+    func didPing()
+}
+
+public enum MQTTClientError : Error, CaseIterable {
     case expiringToken
     case invalidTokenUsername
     case mqttClientNotSet
@@ -27,17 +33,19 @@ public enum MQTTClientError: Error, CaseIterable {
 private let keepAliveSeconds: UInt16 = 60
 
 public final class MQTTClient {
-
-    public private(set) var clientId: String
-    var connectionToken: String
-    var endpoint: MQTTEndpoint
-    weak var delegate: MQTTClientDelegate?
-    var cocoaMQTTDelegate: CocoaMQTTDelegateObject?
-    private(set) var connectionState: String = "Unknown"
-
-    private var mqtt: CocoaMQTT?
-
-    // MARK: - Initialization
+    
+    public private(set) var clientId:String
+    var connectionToken:String
+    var endpoint:MQTTEndpoint
+    weak var delegate:MQTTClientDelegate?
+    var eventDelegate:MQTTClientEventDelegate?
+    private var cocoaMQTTDelegate:CocoaMQTTDelegateObject?
+    private(set) var connectionState:String = "Unknown"
+    
+    private var mqtt:CocoaMQTT?
+    
+    
+    //MARK: - Initialization
     deinit {
         #if DEBUG
         print("+ MQTTClient DEINIT +")
@@ -52,7 +60,9 @@ public final class MQTTClient {
         self.connectionToken = connectionToken
         self.endpoint = endpoint
         self.delegate = delegate
-        self.cocoaMQTTDelegate = CocoaMQTTDelegateObject()
+        let eventObject = CocoaMQTTDelegateObject()
+        eventObject.target = self //weak ref
+        self.cocoaMQTTDelegate = eventObject
         try prepareMQTT()
     }
 
@@ -75,7 +85,9 @@ public final class MQTTClient {
             if let expDate = jwt.expiresAt {
                 let currentDate = Date()
                 let tokenExpirationSeconds = expDate.secondsFrom(anotherDate: currentDate)
+                #if DEBUG
                 print(" - Gateway Token: Time to expire: \(tokenExpirationSeconds) seconds")
+                #endif
                 if tokenExpirationSeconds < 100 {
                     throw MQTTClientError.expiringToken
                 }
@@ -128,15 +140,17 @@ public final class MQTTClient {
     }
 
     public func stopAndDisconnect() {
+        #if DEBUG
         print("+ MQTTClient stopAndDisconnect() --")
+        #endif
         mqtt?.autoReconnect = false
         mqtt?.disconnect()
     }
-
-    public func sendMessage(_ message: String, topic: String) throws {
-//        #if DEBUG
-//        print("+ MQTTClient TRYING sendMessage. Date: \(Date()), topic: \(topic)")
-//        #endif
+    
+    public func sendMessage(_ message:String, topic:String) throws {
+        #if DEBUG
+        print("+ MQTTClient TRYING sendMessage. Date: \(Date()), topic: \(topic)")
+        #endif
         guard let mqtt = self.mqtt else {
             throw MQTTClientError.mqttClientNotSet
         }
@@ -173,6 +187,7 @@ extension MQTTClient: CocoaMQTTDelegateObjectTarget {
 
     func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
 //        trace("didPublishMessage: \(message), id: \(id)")
+        self.eventDelegate?.didPublishMessage()
     }
 
     func mqtt(_ mqtt: CocoaMQTT, didPublishComplete id: UInt16) {
@@ -198,19 +213,25 @@ extension MQTTClient: CocoaMQTTDelegateObjectTarget {
     func mqttDidDisconnect(_ mqtt: CocoaMQTT, withError err: Error?) {
         if let error = err {
             trace("did disconnect: \(err.debugDescription)")
+            #if DEBUG
             print("MQTT DISCONNECTION ERROR:\n \(error)\n")
+            #endif
+            
             connectionState = "didDisconnect, Error(\(error.localizedDescription)"
             let customError = NSError(domain: "com.MQTTCient",
                                       code: 1,
                                       userInfo: [NSLocalizedDescriptionKey: "MQTT connection lost with cause: \(connectionState)"])
-
-            delegate?.mqttClientDidEncounterError(error)
-        } else {
+            
+            
+            delegate?.mqttClientDidEncounterError(customError)
+        }
+        else {
             trace("did disconnect: \(err.debugDescription)")
-            print("MQTT DISCONNECTED")
+            
             connectionState = "didDisconnect"
 
             if !mqtt.autoReconnect {
+                self.mqtt?.delegate = nil
                 self.mqtt = nil
             }
             delegate?.mqttClientDidDisconnect()
@@ -219,10 +240,12 @@ extension MQTTClient: CocoaMQTTDelegateObjectTarget {
 
     func mqttDidPing(_ mqtt: CocoaMQTT) {
         trace("did ping")
+        self.eventDelegate?.didPing()
     }
 
     func mqttDidReceivePong(_ mqtt: CocoaMQTT) {
         trace("did recieve pong")
+        self.eventDelegate?.didReceivePong()
     }
 
     func mqtt(_ mqtt: CocoaMQTT, didStateChangeTo state: CocoaMQTTConnState) {
