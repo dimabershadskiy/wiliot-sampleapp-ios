@@ -20,17 +20,24 @@ protocol PacketsPacing {
 }
 
 class PacketsPacingService {
-
-    private var pacingTimer: DispatchSourceTimer?
-    private(set) var packetsSender: TagPacketsSender
-
-    /// default value is 10 seconds
-    private(set) var pacingTimeoutSeconds: TimeInterval = 10
-    private lazy var packetsStore: [UUID: TagPacketData] = [:]
-    private lazy var externalTagID_to_UUIDMap: [String: [UUID]] = [:]
-    var firstFireDate: Date?
-
-    init(with tagPacketsSender: TagPacketsSender) {
+    
+    private var pacingTimer:DispatchSourceTimer?
+    private(set) var packetsSender:TagPacketsSender
+    
+    ///default value is 10 seconds
+    private(set) var pacingTimeoutSeconds:TimeInterval = 10
+    private lazy var packetsStore:[UUID:TagPacketData] = [:]
+    private lazy var externalTagID_to_UUIDMap:[String:[UUID]] = [:]
+    var firstFireDate:Date?
+    private lazy var opQueue:OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "com.SampleApp.PacketsPacingService_operationQueue"
+        queue.maxConcurrentOperationCount = 1
+        
+        return queue
+    }()
+    
+    init(with tagPacketsSender:TagPacketsSender) {
         packetsSender = tagPacketsSender
         print("+ PacketsPacingService INIT -")
         startPacingWithTimeout()
@@ -76,14 +83,21 @@ class PacketsPacingService {
     }
 
     private func pacingTimerFire() {
+        
+        opQueue.addOperation {[weak self] in
+            
+            guard let weakSelf = self else {
+                return
+            }
+            
+            weakSelf.clearOldPacketsIfFound()
+            let packets = weakSelf.preparePacketsToSend()
 
-        clearOldPacketsIfFound()
-        let packets = preparePacketsToSend()
-
-        sendPackets(packets)
-
-        if firstFireDate == nil {
-            firstFireDate = Date()
+            weakSelf.sendPackets(packets)
+            
+            if weakSelf.firstFireDate == nil {
+                weakSelf.firstFireDate = Date()
+            }
         }
     }
 

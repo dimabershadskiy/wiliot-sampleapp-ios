@@ -50,7 +50,7 @@ Using Objective-C:
 
 ```obj-c
 // When using Clang Modules:
-@import CocoaAsyncSocket; 
+@import MqttCocoaAsyncSocket; 
 
 // or when not:
 #import "GCDAsyncSocket.h" // for TCP
@@ -60,7 +60,7 @@ Using Objective-C:
 Using Swift:
 
 ```swift
-import CocoaAsyncSocket
+import MqttCocoaAsyncSocket
 ```
 
 ## TCP

@@ -1,6 +1,9 @@
 import Foundation
 
-private let oauthBase = "https://api.wiliot.com"
+
+
+fileprivate let oauthBase = "https://api.us-east-2.prod.wiliot.cloud"
+
 
 enum APIPath {
     case receiveAuthToken
@@ -26,21 +29,33 @@ private let kGatewayAuthTokenKey = "access_token"
 
 // MARK: -
 class NetworkService {
-
-    let appKey: String
-    let ownerId: String
-
-    init(appKey: String, ownerId: String) {
+    
+    let appKey:String
+    let ownerId:String
+    
+    private var tempTokenRequestDataTask:URLSessionDataTask?
+    
+    init(appKey:String, ownerId:String) {
+        #if DEBUG
+        print("Network Requests will be spawned with AppKey:'\(appKey)', ownerId:'\(ownerId)'")
+        #endif
         self.appKey = appKey
         self.ownerId = ownerId
     }
-
-    private func postRequestWithToken(_ token: String, isBearer: Bool = true, path: String) -> URLRequest {
-
-        let url = URL(string: path)!
-
-        var request = URLRequest(url: url)
-
+    
+    
+    private func postRequestWithToken(_ token:String, isBearer:Bool = true, path:String) -> URLRequest? {
+        
+        guard let url = URL(string:path) else {
+            return nil
+        }
+        
+        #if DEBuG
+        print("POST URL: \(url)")
+        #endif
+        
+        var request = URLRequest(url:url)
+        
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
@@ -55,24 +70,31 @@ class NetworkService {
 
         return request
     }
-
-    private func handleBadResponseScenario(error: Error?, data: Data?, response: URLResponse?) -> Error? {
-        if let anError = error {
-
+    
+    private func handleBadResponseScenario(_ response:DataTaskResponse) -> Error? {
+        if let anError = response.error {
+            
             return anError
         }
-
-        guard let response = response,
-              let data = data,
-              let httpResponse = response as? HTTPURLResponse else {
+        
+        
+        guard let urlResponse = response.urlResponse,
+              let data = response.data,
+              let httpResponse = urlResponse as? HTTPURLResponse else {
             return ValueReadingError.invalidValue("Wrong response received")
 
         }
-
-        if httpResponse.statusCode != 200 {
-            print("Status Code: \(httpResponse.statusCode) for \(response.url!.path)")
+        let code = httpResponse.statusCode
+        
+        if code != 200 {
+            #if DEBUG
+            print("Status Code: \(code) for \(urlResponse.url?.path ?? "--")")
+            #endif
+            
+            if code == 401 {
+                return BadServerResponse.badStatusCode(httpResponse.statusCode, "Unauthorized. check tokens..")
+            }
             return BadServerResponse.badStatusCode(httpResponse.statusCode, "Unhandled server response")
-
         }
 
         if data.isEmpty {
@@ -90,34 +112,55 @@ extension NetworkService: AuthTokenRequester {
     func getAuthToken(completion: @escaping ((AuthTokenResult) -> Void)) {
 
         let path = APIPath.receiveAuthToken.path
-
-        let request = postRequestWithToken(appKey, isBearer: false, path: oauthBase + path)
-        print("getAuthToken: \(request.url!)")
+        
+        guard var request = postRequestWithToken(appKey, isBearer: false, path: oauthBase + path) else {
+            completion(.failure(ValueReadingError.invalidValue("NO URL Request for get auth token")))
+            return
+        }
+        
+        request.timeoutInterval = 15
+        
+        #if DEBUG
+        print("getAuthToken(completion: \(request.url?.path ?? "----")")
+        #endif
+        
         let authTokenRequestTask = URLSession.shared.dataTask(with: request) {[weak self] data, urlResponse, error in
-
-            guard let self = self else { return }
-
-            if let error = self.handleBadResponseScenario(error: error, data: data, response: urlResponse) {
-                completion( .failure(error))
+            
+            guard let self = self else {
                 return
             }
-
-            guard let responseData = data else {
-                completion( .failure(ValueReadingError.missingRequiredValue("No Auth Token response data")))
-                return
-            }
-
-            do {
-                // let dict = try JSONSerialization.jsonObject(with: responseData)
-
-                let authData = try JSONDecoder().decode(FusionAuthResponseModel.self, from: responseData)
-                completion( .success(authData.accessToken))
-            } catch {
-                completion( .failure(error))
-            }
+            let response = DataTaskResponse(data: data, urlResponse: urlResponse, error: error)
+            
+            self.handleAuthTokenResponse(response, completionBlock: completion)
+        }
+        
+        self.tempTokenRequestDataTask = authTokenRequestTask
+        authTokenRequestTask.resume()
+    }
+    
+    private func handleAuthTokenResponse(_ response:DataTaskResponse, completionBlock completion: @escaping ((AuthTokenResult) -> ()) ) {
+        defer {
+            self.tempTokenRequestDataTask = nil
+        }
+        
+        if let error = self.handleBadResponseScenario(response) {
+            completion( .failure(error))
+            return
+        }
+        
+        guard let responseData = response.data else {
+            completion( .failure(ValueReadingError.missingRequiredValue("No Auth Token response data")))
+            return
         }
 
-        authTokenRequestTask.resume()
+        do {
+            
+            let authData = try JSONDecoder().decode(FusionAuthResponseModel.self, from: responseData)
+            completion( .success(authData.accessToken))
+        }
+        catch {
+            completion( .failure(error))
+        }
     }
 }
 
@@ -127,9 +170,14 @@ extension NetworkService: GatewayRegistrator {
 
     func registerGatewayFor(owner ownerId: String, gatewayId: String, authToken: String, completion: @escaping ((TokensResult) -> Void)) {
         let path = APIPath.registerGW(ownerId: ownerId, gatewayId: gatewayId).path
-
-        var request = postRequestWithToken(authToken, path: oauthBase + path)
-
+        
+        guard let urlRequest = postRequestWithToken(authToken, path: oauthBase + path) else {
+            completion(.failure(ValueReadingError.invalidValue("No URL Request for registering gateway")))
+            return
+        }
+                
+        var request = urlRequest
+       
         let bodyDict = ["gatewayName": Device.deviceId, "gatewayType": "mobile"]
         do {
             let data = try JSONSerialization.data(withJSONObject: bodyDict)
@@ -138,21 +186,24 @@ extension NetworkService: GatewayRegistrator {
             completion(.failure(error))
             return
         }
-
-        print("Register gateway Request: \(request.url!.absoluteString), \n Header:\(request.allHTTPHeaderFields), \nbody: \(request.httpBody)")
-
+        #if DEBUG
+        print("Register gateway Request: \(request.url!.absoluteString), \n Header:\(String(describing: request.allHTTPHeaderFields)), \nbody: \(String(describing: request.httpBody))")
+        #endif
+        
         let registerTask = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
 
             guard let self = self else {
                 return
             }
-
-            if let error = self.handleBadResponseScenario(error: error, data: data, response: response) {
+            
+            let dtResponse = DataTaskResponse(data: data, urlResponse: response, error: error)
+            if let error = self.handleBadResponseScenario(dtResponse) {
                 completion(.failure(error))
                 return
             }
-
-            guard let responseData = data else {
+            
+            
+            guard let responseData = dtResponse.data else {
                 completion( .failure(ValueReadingError.invalidValue("Wrong response received") ) )
                 return
             }
@@ -179,22 +230,25 @@ extension NetworkService: GatewayRegistrator {
 
         var path = APIPath.refreshGWToken(refresh_token: refreshToken).path
         path.append("?refresh_token=\(refreshToken)")
-
-        let request = postRequestWithToken("", path: path)
-
+        
+        guard let request = postRequestWithToken("", path: path) else {
+            completion(.failure(ValueReadingError.invalidValue("No URL Request for Refresh gateway token")))
+            return
+        }
+        
         let refreshTask =
         URLSession.shared.dataTask(with: request) {[weak self] data, urlResponse, error in
 
             guard let self = self else { return }
-
-            if let error = self.handleBadResponseScenario(error: error,
-                                                          data: data,
-                                                          response: urlResponse) {
-                completion(.failure(error))
+            
+            let dtResponse = DataTaskResponse(data: data, urlResponse: urlResponse, error: error)
+            
+            if let error = self.handleBadResponseScenario(dtResponse) {
+                completion (.failure(error))
                 return
             }
-
-            guard let responseData = data else {
+            
+            guard let responseData = dtResponse.data else {
                 completion( .failure(ValueReadingError.missingRequiredValue("No Response Data")))
                 return
             }
@@ -214,25 +268,25 @@ extension NetworkService: GatewayRegistrator {
 
         refreshTask.resume()
     }
-
-    private func handleTokensResponse(_ tokensData: [String: Any], completion: @escaping ((TokensResult) -> Void)) {
-            // handle success response
-            var tokens = GatewayTokens()
-
-            if let authToken = tokensData[kGatewayAuthTokenKey] as? String {
-                tokens.setAuth(authToken)
-            }
-
-            if let refresh = tokensData[kGatewayRefreshTokenKey] as? String {
-                tokens.setRefresh(refresh)
-            }
-
-            if tokens.isEmpty {
-                completion(.failure(ValueReadingError.missingRequiredValue("No required tokens to start connection") ) )
-                return
-            }
-
-            completion( .success(tokens))
+    
+    private func handleTokensResponse(_ tokensData:[String:Any], completion: @escaping ((TokensResult) -> ())) {
+            //handle success response
+        var tokens = GatewayTokens()
+        
+        if let authToken = tokensData[kGatewayAuthTokenKey] as? String {
+            tokens.setAuth(authToken)
+        }
+        
+        if let refresh = tokensData[kGatewayRefreshTokenKey] as? String {
+            tokens.setRefresh(refresh)
+        }
+        
+        if tokens.isEmpty {
+            completion(.failure(ValueReadingError.missingRequiredValue("No required tokens to start connection") ) )
+            return
+        }
+        
+        completion( .success(tokens))
     }
 
 }

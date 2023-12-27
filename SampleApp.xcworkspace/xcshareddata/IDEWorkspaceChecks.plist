@@ -2,9 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>app_token</key>
-	<string>WRONG_API_TOKEN_REPLACE_WITH_REAL_ONE</string>
-	<key>owner_id</key>
-	<string>WRONG_OWNER_ID_REPLACE_WITH_REAL_ONE</string>
+	<key>IDEDidComputeMac32BitWarning</key>
+	<true/>
 </dict>
 </plist>

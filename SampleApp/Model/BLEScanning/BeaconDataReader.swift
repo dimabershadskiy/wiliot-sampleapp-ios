@@ -6,45 +6,70 @@ import Foundation
 typealias BridgeSoftwareVersionStringsTuple = (major: String, minor: String, patch: String)
 typealias BridgeSoftwareVersionUInt8Tuple = (major: UInt8, minor: UInt8, patch: UInt8)
 
+
 class BeaconDataReader {
-
-    class func isBeaconDataSideInfoPacket(_ data: Data) -> Bool {
-        let groupIdRange = 2..<5
-        let groupIdData = data.subdata(in: groupIdRange)
-        let groupIdString = groupIdData.hexEncodedString()
-
-        if isPacketFDAF(data), groupIdString == "0000ec" {
-//            print("groupIdString: \(groupIdString)")
+    
+    private static var thirdPartySensorFlagData:Data = Data([UInt8(0x00), UInt8(0x00), UInt8(0xEB)])
+    private static var sideInfoFlagData:Data =         Data([UInt8(0x00), UInt8(0x00), UInt8(0xEC)])
+    private static var gatewayToBridgeFlagData =       Data(Array<UInt8>(arrayLiteral:0x00, 0x00, 0xED))
+    private static var bridgeToGatewayFlagData:Data =  Data(Array<UInt8>(arrayLiteral:0x00, 0x00, 0xEE))
+    
+    class func isBeaconDataSideInfoPacket(_ data:Data) -> Bool {
+        
+        if (isPacketFCC6(data) || isPacketAFFD(data)),
+            (isBeaconDataSideInfoEC(data) || isBeaconDataSideInfoThirdPartySensorInfo(data)) {
             return true
         }
         return false
     }
-
-    class func isBeaconDataGWtoBridgeMessage(_ data: Data) -> Bool {
+    
+    ///uses first bytes 3,4,5 of incoming Data object and compares to Data with Bytes 0x00, 0x00, 0xEC
+    private class func isBeaconDataSideInfoEC(_ data:Data) -> Bool {
         let groupIdRange = 2..<5
         let groupIdData = data.subdata(in: groupIdRange)
-        let groupIdString = groupIdData.hexEncodedString()
-
-        if isPacketFDAF(data), groupIdString == "0000ed" {
-//            print("Group ID: \(groupIdString)")
+        if groupIdData == sideInfoFlagData { //[00, 00, EC]
             return true
         }
         return false
     }
-
-    class func isBeaconDataBridgeToGWmessage(_ data: Data) -> Bool {
+    
+    ///uses first bytes 3,4,5 of incoming Data object and compares to Data with Bytes 0x00, 0x00, 0xEB
+    class func isBeaconDataSideInfoThirdPartySensorInfo(_ data:Data) -> Bool {
         let groupIdRange = 2..<5
-        let groupIdData = data.subdata(in: groupIdRange)
-        let groupIdString = groupIdData.hexEncodedString()
-
-        if isPacketFDAF(data), groupIdString == "0000eb" ||  groupIdString == "0000ee" {
-//            print("Group ID: \(groupIdString) isBeaconDataBridgeToGWmessage- TRUE")
+        let groupIdData:Data = data.subdata(in: groupIdRange)
+        if groupIdData == thirdPartySensorFlagData { //[00, 00, EB]
+            #if DEBUG
+            print("Side Info as 3rd party payload: \(data.hexEncodedString(options: .upperCase))")
+            #endif
             return true
         }
         return false
     }
+    
+    ///uses first bytes 3,4,5 of incoming Data object and compares to Data with Bytes 0x00, 0x00, 0xED
+    class func isBeaconDataGWtoBridgeMessage(_ data:Data) -> Bool {
+        let groupIdRange = 2..<5
+        let groupIdData = data.subdata(in: groupIdRange)
+        
+        if (isPacketFCC6(data) || isPacketAFFD(data)), groupIdData == gatewayToBridgeFlagData { //[00,00,ED]
+            return true
+        }
+        return false
+    }
+    
+    ///uses first bytes 3,4,5 of incoming Data object and compares to Data with Bytes 0x00, 0x00, 0xEE
+    class func isBeaconDataBridgeToGWmessage(_ data:Data) -> Bool { //[00,00,EE]
+        let groupIdRange = 2..<5
+        let groupIdData = data.subdata(in: groupIdRange)
 
-    class func tagPacketId(from data: Data) -> Data? {
+        if  (isPacketFCC6(data) || isPacketAFFD(data)), groupIdData == bridgeToGatewayFlagData {
+            return true
+        }
+        return false
+    }
+    
+    //uses bytes 26,27,28,29 of the incoming Data object and returns them as a separate data. If count of bytes is less than 4 - returns nil
+    class func tagPacketId(from data:Data) -> Data? {
         #if DEBUG
         let dataCount = data.count
         if dataCount != 29 {
@@ -58,14 +83,8 @@ class BeaconDataReader {
         }
         return origTagPacketId
     }
-
-//    class func bridgeTagIdStringFrom(_ data:Data) -> String {
-//        let tagPacketIdentifier = data.subdata(in: 14..<18)
-//        let tagPacketIdentifierStr = tagPacketIdentifier.hexEncodedString()
-//        return tagPacketIdentifierStr
-//    }
-
-    class func isPacketFDAF(_ data: Data) -> Bool {
+    
+    class func isPacketFDAF(_ data:Data) -> Bool {
         let serviceRange = 0..<2
         let aData = data.subdata(in: serviceRange)
         let packetTypeString = aData.hexEncodedString()
@@ -78,70 +97,63 @@ class BeaconDataReader {
 
     class func isPacketAFFD(_ data: Data) -> Bool {
         let serviceRange = 0..<2
-        let aData = data.subdata(in: serviceRange)
-        let packetTypeString = aData.hexEncodedString()
-
-        if packetTypeString == "affd" {
+        let aDataToCompare:Data = data.subdata(in: serviceRange)
+        
+        let uint8Arr:[UInt8] = [UInt8(0xAF), UInt8(0xFD)] //0xAFFD
+        let dataAFFD:Data = Data.init(uint8Arr)
+        if dataAFFD == aDataToCompare {
             return true
         }
         return false
     }
-
-    class func bridgeMacAddressFrom(_ data: Data) -> String {
+    
+    class func isPacketFCC6(_ data:Data) -> Bool {
+        let serviceRange = 0..<2
+        let uint8Arr:[UInt8] = [0xFC, 0xC6] //0XFCC6
+        let dataFCC6:Data = Data(uint8Arr)
+        
+        
+        let aDataPrefix:Data = data.subdata(in: serviceRange)
+        
+        if aDataPrefix == dataFCC6 {
+            return true
+        }
+        return false
+    }
+    /// - Returns: Uppercased hex string
+    class func bridgeMacAddressFrom(sideInfoData data:Data) -> String {
         let macAddressSubdata = bridgeMacAddressDataFrom(data)
         let macAddressStr = macAddressSubdata.hexEncodedString(options: .upperCase)
         return macAddressStr
     }
-
-    class func bridgeMacAddressDataFrom(_ data: Data) -> Data {
+    
+    fileprivate
+    class func bridgeMacAddressDataFrom(_ data:Data) -> Data {
         let macAddressSubdata = data.subdata(in: 5..<11)
         return macAddressSubdata
     }
-
-    class func first8BytesOf(data: Data) -> Data? {
-
-        if data.count < 8 {
-            return nil
-        }
-
-        let range = 0..<8
-        return data.subdata(in: range)
-    }
-
-//    class func isBeaconDataBridgeWithSWVersion(_ data:Data) -> Bool {
-//        if isPacketFDAF(data) {
-//            let groupIdRange = 2..<5
-//            let groupIdData = data.subdata(in: groupIdRange)
-//            let groupIdString = groupIdData.hexEncodedString()
-//            if groupIdString == "0000eb" {
-//                return true
-//            }
-//            print(" - groupIdString: \(groupIdString)")
-//        }
-//        return false
-//    }
-
-    class func bridgeSoftwareVersionFrom(_ data: Data) -> (major: String, minor: String, patch: String) {
-
+    
+    class func bridgeSoftwareVersionFrom(_ data:Data) -> (major:String, minor:String, patch:String) {
+        
         let softWareVersionRange = 0..<3
         let softWareData = data.subdata(in: softWareVersionRange)
 
         return bridgeSoftwareVersionFromCompact(softWareData: softWareData)
     }
-
-    class func bridgeSoftwareVersionFromCompact(softWareData: Data) -> BridgeSoftwareVersionStringsTuple {
-
-        var result = (major: "", minor: "", patch: "")
-
-        let majorVersionByte = softWareData.subdata(in: 0..<1)
+    
+    class func bridgeSoftwareVersionFromCompact(softWareData data:Data) -> BridgeSoftwareVersionStringsTuple {
+        
+        var result = (major:"", minor:"", patch:"")
+        
+        let majorVersionByte = data.subdata(in: 0..<1)
         let majorStr = majorVersionByte.hexEncodedString(options: .upperCase).suffix(1)
         result.major = String(majorStr)
-
-        let minorVersionByte = softWareData.subdata(in: 1..<2)
+        
+        let minorVersionByte = data.subdata(in: 1..<2)
         let minorStr = minorVersionByte.hexEncodedString(options: .upperCase).suffix(1)
         result.minor = String(minorStr)
-
-        let patchVersionByte = softWareData.subdata(in: 2..<3)
+        
+        let patchVersionByte = data.subdata(in: 2..<3)
         let patchStr = patchVersionByte.hexEncodedString(options: .upperCase).suffix(1)
 
         result.patch = String(patchStr)
@@ -179,24 +191,3 @@ class BeaconDataReader {
         return Int(uint8value)
     }
 }
-
-// extension BeaconDataReader {
-//    class func softwareVersionStringFromSoftwareVersionTuple(_ tuple:BridgeSoftwareVersionStringsTuple, separator:String = ".") -> String {
-//        let majorVersion = removeLeadingZeroFromString(tuple.major)
-//        let minorVersion = removeLeadingZeroFromString(tuple.minor)
-//        let patchVersion = removeLeadingZeroFromString(tuple.patch)
-//
-//        let versionStrings:[String] = [majorVersion, minorVersion, patchVersion]
-//
-//        return versionStrings.joined(separator: separator)
-//    }
-//
-//    class func removeLeadingZeroFromString(_ string:String) -> String {
-//        var toReturn = string
-//        if string.hasPrefix("0") {
-//            let suffix = string.suffix(1)
-//            toReturn = String(suffix)
-//        }
-//        return toReturn
-//    }
-// }

@@ -73,10 +73,7 @@ extension FrameDisconnect {
         }
         //3.14.2.2.4 User Property
         if let userProperty = self.userProperties {
-            let dictValues = [String](userProperty.values)
-            for (value) in dictValues {
-                properties += getMQTTPropertyData(type: CocoaMQTTPropertyName.userProperty.rawValue, value: value.bytesWithLength)
-            }
+            properties += userProperty.userPropertyBytes
         }
         //3.14.2.2.5 Server Reference
         if let serverReference = self.serverReference {
