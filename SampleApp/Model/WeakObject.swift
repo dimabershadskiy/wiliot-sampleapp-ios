@@ -2,6 +2,10 @@
 //  WeakObject.swift
 
 import Foundation
+import BLEUpstream
+import CoreLocation
+import WiliotCore
+
 final class WeakObject<T: AnyObject> {
     weak var object: T?
 
@@ -34,22 +38,29 @@ extension WeakObject: LocationSource where T:LocationSource {
     }
 }
 
-extension WeakObject: BridgePayloadsReceiving where T:BridgePayloadsReceiving {
-    func receiveBridgeMassagePayloadPacket(_ bridgeMessagePacket: BLEPacket) {
-        object?.receiveBridgeMassagePayloadPacket(bridgeMessagePacket)
-    }
-}
+//extension WeakObject: BridgePayloadsReceiving where T:BridgePayloadsReceiving {
+//    func receiveBridgeMassagePayloadPacket(_ bridgeMessagePacket: BLEPacket) {
+//        object?.receiveBridgeMassagePayloadPacket(bridgeMessagePacket)
+//    }
+//}
+//
+//extension WeakObject: MQTTClientEventDelegate where T:MQTTClientEventDelegate {
+//    func didPublishMessage() {
+//        object?.didPublishMessage()
+//    }
+//    
+//    func didReceivePong() {
+//        object?.didReceivePong()
+//    }
+//    
+//    func didPing() {
+//        object?.didPing()
+//    }
+//}
 
-extension WeakObject: MQTTClientEventDelegate where T:MQTTClientEventDelegate {
-    func didPublishMessage() {
-        object?.didPublishMessage()
-    }
-    
-    func didReceivePong() {
-        object?.didReceivePong()
-    }
-    
-    func didPing() {
-        object?.didPing()
+
+extension WeakObject : LocationCoordinatesContainer where T:LocationCoordinatesContainer {
+    var currentLocationCoordinates: CLLocationCoordinate2D? {
+        return object?.currentLocationCoordinates
     }
 }

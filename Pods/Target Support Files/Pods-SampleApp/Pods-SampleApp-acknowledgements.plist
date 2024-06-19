@@ -14,18 +14,6 @@
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>This project is dual licensed under the Eclipse Public License 1.0 and the
-Eclipse Distribution License 1.0 as described in the epl-v10 and edl-v10 files.
-</string>
-			<key>License</key>
-			<string>MIT</string>
-			<key>Title</key>
-			<string>CocoaMQTT</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
 			<string>The MIT License (MIT)
 
 Copyright (c) 2022 Auth0, Inc. &lt;support@auth0.com&gt; (http://auth0.com)
@@ -52,6 +40,18 @@ SOFTWARE.
 			<string>MIT</string>
 			<key>Title</key>
 			<string>JWTDecode</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>This project is dual licensed under the Eclipse Public License 1.0 and the
+Eclipse Distribution License 1.0 as described in the epl-v10 and edl-v10 files.
+</string>
+			<key>License</key>
+			<string>MIT</string>
+			<key>Title</key>
+			<string>CocoaMQTT</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
