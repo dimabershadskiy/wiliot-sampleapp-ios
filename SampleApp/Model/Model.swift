@@ -54,10 +54,20 @@ fileprivate let kConstantsPlistFileName = "SampleAuthConstants"
     
     private var permissionsCompletionCancellable:AnyCancellable?
     private var gatewayServiceMessageCancellable:AnyCancellable?
-    
+    private var appBuildInfo:String = ""
     //MARK: -
     override init() {
         super.init()
+        
+        DispatchQueue.global(qos: .default).async {[weak self] in
+            guard let self else { return }
+            
+            if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
+               let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
+                self.appBuildInfo = "\(version) (build \(build))"
+            }
+        }
+        
     }
     
     func loadRequiredData() {
@@ -84,9 +94,9 @@ fileprivate let kConstantsPlistFileName = "SampleAuthConstants"
         let gatewayAuthToken:NonEmptyCollectionContainer<String> = .init(token) ?? .init("<supply Gateway_Auth_token>")!
         
         let accountIdContainer = NonEmptyCollectionContainer<String>(ownerId) ?? NonEmptyCollectionContainer("SampleApp_Test")!
-        
-        let appVersionContainer = NonEmptyCollectionContainer("<supply App Version here>")!
-        let deviceIdContainer = NonEmptyCollectionContainer("<Supply some Unique UUID string>")!
+        let deviceIdStr:String = Device.deviceId
+        let appVersionContainer = NonEmptyCollectionContainer(self.appBuildInfo) ?? NonEmptyCollectionContainer("<supply App Version here>")!
+        let deviceIdContainer = NonEmptyCollectionContainer(deviceIdStr)!
         
         let receivers:BLEUExternalReceivers = BLEUExternalReceivers(bridgesUpdater: nil, //to listen to nearby bridges
                                                                     blePixelResolver: nil, //agent responsible for resolving pixel payload into pixel ID
