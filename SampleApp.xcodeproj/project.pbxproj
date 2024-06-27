@@ -3,17 +3,55 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		2C1862BB2A60587A008D0AE6 /* DataTaskResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1862BA2A60587A008D0AE6 /* DataTaskResponse.swift */; };
-		2C31500828D86BD5000A3183 /* BLEPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31500728D86BD5000A3183 /* BLEPacket.swift */; };
+		2C1936FF2C22BAEB004747C8 /* BLEUpstream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1936F72C22BAEA004747C8 /* BLEUpstream.framework */; };
+		2C1937062C22BAEB004747C8 /* BLEUpstreamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937052C22BAEB004747C8 /* BLEUpstreamTests.swift */; };
+		2C1937072C22BAEB004747C8 /* BLEUpstream.h in Headers */ = {isa = PBXBuildFile; fileRef = 2C1936F92C22BAEA004747C8 /* BLEUpstream.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2C19370A2C22BAEB004747C8 /* BLEUpstream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1936F72C22BAEA004747C8 /* BLEUpstream.framework */; };
+		2C19370B2C22BAEB004747C8 /* BLEUpstream.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1936F72C22BAEA004747C8 /* BLEUpstream.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2C1937352C22BB69004747C8 /* BLEUProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937122C22BB69004747C8 /* BLEUProtocols.swift */; };
+		2C1937362C22BB69004747C8 /* BLEUpstreamService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937132C22BB69004747C8 /* BLEUpstreamService.swift */; };
+		2C1937372C22BB69004747C8 /* BLEUServiceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937142C22BB69004747C8 /* BLEUServiceConfiguration.swift */; };
+		2C1937382C22BB69004747C8 /* BLEAdvertiser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937152C22BB69004747C8 /* BLEAdvertiser.swift */; };
+		2C1937392C22BB69004747C8 /* BLEState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937162C22BB69004747C8 /* BLEState.swift */; };
+		2C19373A2C22BB69004747C8 /* BLEUCentralManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937172C22BB69004747C8 /* BLEUCentralManagerService.swift */; };
+		2C19373B2C22BB69004747C8 /* BridgeCommandMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937192C22BB69004747C8 /* BridgeCommandMessageType.swift */; };
+		2C19373C2C22BB69004747C8 /* BLEUMobileGatewayConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C19371B2C22BB69004747C8 /* BLEUMobileGatewayConfig.swift */; };
+		2C19373D2C22BB69004747C8 /* BLEUMobileGatewayService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C19371C2C22BB69004747C8 /* BLEUMobileGatewayService.swift */; };
+		2C19373E2C22BB69004747C8 /* BLEUMQTTCLient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C19371D2C22BB69004747C8 /* BLEUMQTTCLient.swift */; };
+		2C19373F2C22BB69004747C8 /* BLEUpstreamEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C19371E2C22BB69004747C8 /* BLEUpstreamEndpoint.swift */; };
+		2C1937402C22BB69004747C8 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C19371F2C22BB69004747C8 /* Mocks.swift */; };
+		2C1937412C22BB69004747C8 /* GatewayCapabilitiesMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937212C22BB69004747C8 /* GatewayCapabilitiesMessage.swift */; };
+		2C1937422C22BB69004747C8 /* GatewayDataEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937222C22BB69004747C8 /* GatewayDataEncoder.swift */; };
+		2C1937432C22BB69004747C8 /* GatewayPacketsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937232C22BB69004747C8 /* GatewayPacketsData.swift */; };
+		2C1937442C22BB69004747C8 /* GatewayTagPacketsLogData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937242C22BB69004747C8 /* GatewayTagPacketsLogData.swift */; };
+		2C1937452C22BB69004747C8 /* BeaconDataReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937262C22BB69004747C8 /* BeaconDataReader.swift */; };
+		2C1937462C22BB69004747C8 /* BLEPacket+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937272C22BB69004747C8 /* BLEPacket+Extensions.swift */; };
+		2C1937472C22BB69004747C8 /* BLEUPacketsCoupler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937282C22BB69004747C8 /* BLEUPacketsCoupler.swift */; };
+		2C1937482C22BB69004747C8 /* BLEUPacketsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937292C22BB69004747C8 /* BLEUPacketsManager.swift */; };
+		2C1937492C22BB69004747C8 /* BLEUPacketsPacingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C19372A2C22BB69004747C8 /* BLEUPacketsPacingService.swift */; };
+		2C19374A2C22BB69004747C8 /* BLEUPacketsRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C19372B2C22BB69004747C8 /* BLEUPacketsRouter.swift */; };
+		2C19374B2C22BB69004747C8 /* BLEUPacketsRouterConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C19372C2C22BB69004747C8 /* BLEUPacketsRouterConfiguration.swift */; };
+		2C19374C2C22BB69004747C8 /* BLEUTagPacketsPayloadsLogService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C19372D2C22BB69004747C8 /* BLEUTagPacketsPayloadsLogService.swift */; };
+		2C19374D2C22BB69004747C8 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C19372E2C22BB69004747C8 /* Data+Extensions.swift */; };
+		2C19374E2C22BB69004747C8 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C19372F2C22BB69004747C8 /* Globals.swift */; };
+		2C19374F2C22BB69004747C8 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937302C22BB69004747C8 /* Protocols.swift */; };
+		2C1937502C22BB69004747C8 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937312C22BB69004747C8 /* String+Extensions.swift */; };
+		2C1937512C22BB69004747C8 /* TagPacketData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937322C22BB69004747C8 /* TagPacketData.swift */; };
+		2C1937522C22BB69004747C8 /* WeakObjectContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937332C22BB69004747C8 /* WeakObjectContainer.swift */; };
+		2C1937602C22BD36004747C8 /* MQTTClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1937582C22BD36004747C8 /* MQTTClient.framework */; };
+		2C1937672C22BD36004747C8 /* MQTTClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937662C22BD36004747C8 /* MQTTClientTests.swift */; };
+		2C1937682C22BD36004747C8 /* MQTTClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 2C19375A2C22BD36004747C8 /* MQTTClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2C19376B2C22BD36004747C8 /* MQTTClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1937582C22BD36004747C8 /* MQTTClient.framework */; };
+		2C19376C2C22BD36004747C8 /* MQTTClient.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1937582C22BD36004747C8 /* MQTTClient.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2C1937742C22BD70004747C8 /* WiliotMQTTClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1937732C22BD70004747C8 /* WiliotMQTTClient.swift */; };
 		2C31500A28D86C7A000A3183 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31500928D86C7A000A3183 /* Data+Extension.swift */; };
 		2C31500C28D89E88000A3183 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31500B28D89E88000A3183 /* LocationService.swift */; };
 		2C31500E28D89EF0000A3183 /* iBeacon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31500D28D89EF0000A3183 /* iBeacon.swift */; };
-		2C31501028D8AC3B000A3183 /* BeaconDataReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31500F28D8AC3B000A3183 /* BeaconDataReader.swift */; };
-		2C31501228D8ACF8000A3183 /* PacketsPacingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31501128D8ACF8000A3183 /* PacketsPacingService.swift */; };
 		2C31501428D8AD15000A3183 /* WeakObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C31501328D8AD15000A3183 /* WeakObject.swift */; };
 		2C84AE802A6038070036F7C4 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C84AE7F2A6038070036F7C4 /* Device.swift */; };
 		2C84AE822A6049000036F7C4 /* LocationSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C84AE812A6049000036F7C4 /* LocationSource.swift */; };
@@ -25,33 +63,145 @@
 		2C8B5B2428D8456B00BC45E8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C8B5B2228D8456B00BC45E8 /* LaunchScreen.storyboard */; };
 		2C8B5B2C28D84D1A00BC45E8 /* SampleAuthConstants.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2C8B5B2B28D84D1A00BC45E8 /* SampleAuthConstants.plist */; };
 		2C8B5B2F28D84ECC00BC45E8 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B2E28D84ECC00BC45E8 /* Model.swift */; };
-		2C8B5B3128D84FE900BC45E8 /* MobileGatewayService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B3028D84FE900BC45E8 /* MobileGatewayService.swift */; };
-		2C8B5B3328D8501800BC45E8 /* MQTTClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B3228D8501800BC45E8 /* MQTTClient.swift */; };
 		2C8B5B3528D852D900BC45E8 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B3428D852D900BC45E8 /* NetworkService.swift */; };
 		2C8B5B3728D8531400BC45E8 /* NetworkProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B3628D8531400BC45E8 /* NetworkProtocols.swift */; };
 		2C8B5B3928D853A000BC45E8 /* GatewayTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B3828D853A000BC45E8 /* GatewayTokens.swift */; };
-		2C8B5B3C28D85A9100BC45E8 /* TagPacketData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B3A28D85A9100BC45E8 /* TagPacketData.swift */; };
 		2C8B5B3D28D85A9100BC45E8 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B3B28D85A9100BC45E8 /* Location.swift */; };
 		2C8B5B3F28D85B3100BC45E8 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B3E28D85B3100BC45E8 /* Errors.swift */; };
-		2C8B5B4228D85B5E00BC45E8 /* GatewayPacketsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4028D85B5E00BC45E8 /* GatewayPacketsData.swift */; };
-		2C8B5B4328D85B5E00BC45E8 /* GatewayDataEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4128D85B5E00BC45E8 /* GatewayDataEncoder.swift */; };
 		2C8B5B4728D85BDC00BC45E8 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4628D85BDC00BC45E8 /* Date+Extensions.swift */; };
-		2C8B5B4928D85E8A00BC45E8 /* BLEPacketsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4828D85E8A00BC45E8 /* BLEPacketsManager.swift */; };
 		2C8B5B4D28D8612000BC45E8 /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4C28D8612000BC45E8 /* Permissions.swift */; };
-		2C8B5B4F28D866CB00BC45E8 /* BLEService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8B5B4E28D866CB00BC45E8 /* BLEService.swift */; };
-		2CEAFDA42A65661B00667F22 /* NearbyBridgesUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEAFDA32A65661B00667F22 /* NearbyBridgesUpdater.swift */; };
-		2CEAFDA92A656C6D00667F22 /* SideInfoPacketsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEAFDA82A656C6D00667F22 /* SideInfoPacketsManager.swift */; };
+		2C8E24132C22BEB400841D14 /* Pods_MQTTClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25234B334002A3C811B507A4 /* Pods_MQTTClient.framework */; };
+		2CF1F5812C22B00A00C34047 /* WiliotCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2CF1F5732C22B00900C34047 /* WiliotCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2CF1F5842C22B00A00C34047 /* WiliotCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CF1F5712C22B00900C34047 /* WiliotCore.framework */; };
+		2CF1F5852C22B00A00C34047 /* WiliotCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2CF1F5712C22B00900C34047 /* WiliotCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2CF1F59E2C22B05B00C34047 /* NonEmptyContainers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1F58F2C22B05A00C34047 /* NonEmptyContainers.swift */; };
+		2CF1F59F2C22B05B00C34047 /* BLEPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1F5912C22B05A00C34047 /* BLEPacket.swift */; };
+		2CF1F5A02C22B05B00C34047 /* ClaimableAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1F5922C22B05A00C34047 /* ClaimableAsset.swift */; };
+		2CF1F5A12C22B05B00C34047 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1F5932C22B05A00C34047 /* Data+Extensions.swift */; };
+		2CF1F5A22C22B05B00C34047 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1F5942C22B05A00C34047 /* Date+Extensions.swift */; };
+		2CF1F5A32C22B05B00C34047 /* Double+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1F5952C22B05A00C34047 /* Double+Extensions.swift */; };
+		2CF1F5A42C22B05B00C34047 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1F5962C22B05A00C34047 /* Errors.swift */; };
+		2CF1F5A52C22B05B00C34047 /* PreferredConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1F5972C22B05A00C34047 /* PreferredConnectionType.swift */; };
+		2CF1F5A62C22B05B00C34047 /* ResolvedInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1F5982C22B05A00C34047 /* ResolvedInfo.swift */; };
+		2CF1F5A72C22B05B00C34047 /* ResolveInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1F5992C22B05A00C34047 /* ResolveInfo.swift */; };
+		2CF1F5A92C22B05B00C34047 /* WIliotCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1F59B2C22B05A00C34047 /* WIliotCore.swift */; };
+		2CF1F5AA2C22B05B00C34047 /* WLTLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF1F59C2C22B05A00C34047 /* WLTLocation.swift */; };
 		930ED3BCAD0DB1A18B18F9FF /* Pods_SampleApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF1F4F2E21FDEC6FBDA2AF1F /* Pods_SampleApp.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2C1937002C22BAEB004747C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C8B5B0C28D8456900BC45E8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2C1936F62C22BAEA004747C8;
+			remoteInfo = BLEUpstream;
+		};
+		2C1937022C22BAEB004747C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C8B5B0C28D8456900BC45E8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2C8B5B1328D8456900BC45E8;
+			remoteInfo = SampleApp;
+		};
+		2C1937082C22BAEB004747C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C8B5B0C28D8456900BC45E8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2C1936F62C22BAEA004747C8;
+			remoteInfo = BLEUpstream;
+		};
+		2C1937612C22BD36004747C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C8B5B0C28D8456900BC45E8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2C1937572C22BD36004747C8;
+			remoteInfo = MQTTClient;
+		};
+		2C1937632C22BD36004747C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C8B5B0C28D8456900BC45E8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2C8B5B1328D8456900BC45E8;
+			remoteInfo = SampleApp;
+		};
+		2C1937692C22BD36004747C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C8B5B0C28D8456900BC45E8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2C1937572C22BD36004747C8;
+			remoteInfo = MQTTClient;
+		};
+		2CF1F5822C22B00A00C34047 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C8B5B0C28D8456900BC45E8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2CF1F5702C22B00900C34047;
+			remoteInfo = WiliotCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2CF1F5862C22B00A00C34047 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2CF1F5852C22B00A00C34047 /* WiliotCore.framework in Embed Frameworks */,
+				2C19376C2C22BD36004747C8 /* MQTTClient.framework in Embed Frameworks */,
+				2C19370B2C22BAEB004747C8 /* BLEUpstream.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		25234B334002A3C811B507A4 /* Pods_MQTTClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MQTTClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C1862BA2A60587A008D0AE6 /* DataTaskResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTaskResponse.swift; sourceTree = "<group>"; };
-		2C31500728D86BD5000A3183 /* BLEPacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEPacket.swift; sourceTree = "<group>"; };
+		2C1936F72C22BAEA004747C8 /* BLEUpstream.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BLEUpstream.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C1936F92C22BAEA004747C8 /* BLEUpstream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BLEUpstream.h; sourceTree = "<group>"; };
+		2C1936FE2C22BAEB004747C8 /* BLEUpstreamTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BLEUpstreamTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C1937052C22BAEB004747C8 /* BLEUpstreamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEUpstreamTests.swift; sourceTree = "<group>"; };
+		2C1937122C22BB69004747C8 /* BLEUProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUProtocols.swift; sourceTree = "<group>"; };
+		2C1937132C22BB69004747C8 /* BLEUpstreamService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUpstreamService.swift; sourceTree = "<group>"; };
+		2C1937142C22BB69004747C8 /* BLEUServiceConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUServiceConfiguration.swift; sourceTree = "<group>"; };
+		2C1937152C22BB69004747C8 /* BLEAdvertiser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEAdvertiser.swift; sourceTree = "<group>"; };
+		2C1937162C22BB69004747C8 /* BLEState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEState.swift; sourceTree = "<group>"; };
+		2C1937172C22BB69004747C8 /* BLEUCentralManagerService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUCentralManagerService.swift; sourceTree = "<group>"; };
+		2C1937192C22BB69004747C8 /* BridgeCommandMessageType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BridgeCommandMessageType.swift; sourceTree = "<group>"; };
+		2C19371B2C22BB69004747C8 /* BLEUMobileGatewayConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUMobileGatewayConfig.swift; sourceTree = "<group>"; };
+		2C19371C2C22BB69004747C8 /* BLEUMobileGatewayService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUMobileGatewayService.swift; sourceTree = "<group>"; };
+		2C19371D2C22BB69004747C8 /* BLEUMQTTCLient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUMQTTCLient.swift; sourceTree = "<group>"; };
+		2C19371E2C22BB69004747C8 /* BLEUpstreamEndpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUpstreamEndpoint.swift; sourceTree = "<group>"; };
+		2C19371F2C22BB69004747C8 /* Mocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
+		2C1937212C22BB69004747C8 /* GatewayCapabilitiesMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GatewayCapabilitiesMessage.swift; sourceTree = "<group>"; };
+		2C1937222C22BB69004747C8 /* GatewayDataEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GatewayDataEncoder.swift; sourceTree = "<group>"; };
+		2C1937232C22BB69004747C8 /* GatewayPacketsData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GatewayPacketsData.swift; sourceTree = "<group>"; };
+		2C1937242C22BB69004747C8 /* GatewayTagPacketsLogData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GatewayTagPacketsLogData.swift; sourceTree = "<group>"; };
+		2C1937262C22BB69004747C8 /* BeaconDataReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconDataReader.swift; sourceTree = "<group>"; };
+		2C1937272C22BB69004747C8 /* BLEPacket+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BLEPacket+Extensions.swift"; sourceTree = "<group>"; };
+		2C1937282C22BB69004747C8 /* BLEUPacketsCoupler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUPacketsCoupler.swift; sourceTree = "<group>"; };
+		2C1937292C22BB69004747C8 /* BLEUPacketsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUPacketsManager.swift; sourceTree = "<group>"; };
+		2C19372A2C22BB69004747C8 /* BLEUPacketsPacingService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUPacketsPacingService.swift; sourceTree = "<group>"; };
+		2C19372B2C22BB69004747C8 /* BLEUPacketsRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUPacketsRouter.swift; sourceTree = "<group>"; };
+		2C19372C2C22BB69004747C8 /* BLEUPacketsRouterConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUPacketsRouterConfiguration.swift; sourceTree = "<group>"; };
+		2C19372D2C22BB69004747C8 /* BLEUTagPacketsPayloadsLogService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEUTagPacketsPayloadsLogService.swift; sourceTree = "<group>"; };
+		2C19372E2C22BB69004747C8 /* Data+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Extensions.swift"; sourceTree = "<group>"; };
+		2C19372F2C22BB69004747C8 /* Globals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
+		2C1937302C22BB69004747C8 /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
+		2C1937312C22BB69004747C8 /* String+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
+		2C1937322C22BB69004747C8 /* TagPacketData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagPacketData.swift; sourceTree = "<group>"; };
+		2C1937332C22BB69004747C8 /* WeakObjectContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakObjectContainer.swift; sourceTree = "<group>"; };
+		2C1937582C22BD36004747C8 /* MQTTClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MQTTClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C19375A2C22BD36004747C8 /* MQTTClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MQTTClient.h; sourceTree = "<group>"; };
+		2C19375F2C22BD36004747C8 /* MQTTClientTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MQTTClientTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C1937662C22BD36004747C8 /* MQTTClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MQTTClientTests.swift; sourceTree = "<group>"; };
+		2C1937732C22BD70004747C8 /* WiliotMQTTClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WiliotMQTTClient.swift; sourceTree = "<group>"; };
 		2C31500928D86C7A000A3183 /* Data+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Extension.swift"; sourceTree = "<group>"; };
 		2C31500B28D89E88000A3183 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		2C31500D28D89EF0000A3183 /* iBeacon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = iBeacon.swift; sourceTree = "<group>"; };
-		2C31500F28D8AC3B000A3183 /* BeaconDataReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconDataReader.swift; sourceTree = "<group>"; };
-		2C31501128D8ACF8000A3183 /* PacketsPacingService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PacketsPacingService.swift; sourceTree = "<group>"; };
 		2C31501328D8AD15000A3183 /* WeakObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeakObject.swift; sourceTree = "<group>"; };
 		2C84AE7F2A6038070036F7C4 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		2C84AE812A6049000036F7C4 /* LocationSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSource.swift; sourceTree = "<group>"; };
@@ -65,43 +215,196 @@
 		2C8B5B2528D8456B00BC45E8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2C8B5B2B28D84D1A00BC45E8 /* SampleAuthConstants.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = SampleAuthConstants.plist; sourceTree = "<group>"; };
 		2C8B5B2E28D84ECC00BC45E8 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
-		2C8B5B3028D84FE900BC45E8 /* MobileGatewayService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileGatewayService.swift; sourceTree = "<group>"; };
-		2C8B5B3228D8501800BC45E8 /* MQTTClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MQTTClient.swift; sourceTree = "<group>"; };
 		2C8B5B3428D852D900BC45E8 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		2C8B5B3628D8531400BC45E8 /* NetworkProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProtocols.swift; sourceTree = "<group>"; };
 		2C8B5B3828D853A000BC45E8 /* GatewayTokens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GatewayTokens.swift; sourceTree = "<group>"; };
-		2C8B5B3A28D85A9100BC45E8 /* TagPacketData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagPacketData.swift; sourceTree = "<group>"; };
 		2C8B5B3B28D85A9100BC45E8 /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		2C8B5B3E28D85B3100BC45E8 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
-		2C8B5B4028D85B5E00BC45E8 /* GatewayPacketsData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GatewayPacketsData.swift; sourceTree = "<group>"; };
-		2C8B5B4128D85B5E00BC45E8 /* GatewayDataEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GatewayDataEncoder.swift; sourceTree = "<group>"; };
 		2C8B5B4628D85BDC00BC45E8 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
-		2C8B5B4828D85E8A00BC45E8 /* BLEPacketsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEPacketsManager.swift; sourceTree = "<group>"; };
 		2C8B5B4C28D8612000BC45E8 /* Permissions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
-		2C8B5B4E28D866CB00BC45E8 /* BLEService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEService.swift; sourceTree = "<group>"; };
-		2CEAFDA32A65661B00667F22 /* NearbyBridgesUpdater.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NearbyBridgesUpdater.swift; path = SampleApp/Model/DataUpstream/NearbyBridgesUpdater.swift; sourceTree = SOURCE_ROOT; };
-		2CEAFDA82A656C6D00667F22 /* SideInfoPacketsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideInfoPacketsManager.swift; sourceTree = "<group>"; };
+		2CF1F5712C22B00900C34047 /* WiliotCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WiliotCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2CF1F5732C22B00900C34047 /* WiliotCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WiliotCore.h; sourceTree = "<group>"; };
+		2CF1F58F2C22B05A00C34047 /* NonEmptyContainers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonEmptyContainers.swift; sourceTree = "<group>"; };
+		2CF1F5912C22B05A00C34047 /* BLEPacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEPacket.swift; sourceTree = "<group>"; };
+		2CF1F5922C22B05A00C34047 /* ClaimableAsset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClaimableAsset.swift; sourceTree = "<group>"; };
+		2CF1F5932C22B05A00C34047 /* Data+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Extensions.swift"; sourceTree = "<group>"; };
+		2CF1F5942C22B05A00C34047 /* Date+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		2CF1F5952C22B05A00C34047 /* Double+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Double+Extensions.swift"; sourceTree = "<group>"; };
+		2CF1F5962C22B05A00C34047 /* Errors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
+		2CF1F5972C22B05A00C34047 /* PreferredConnectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferredConnectionType.swift; sourceTree = "<group>"; };
+		2CF1F5982C22B05A00C34047 /* ResolvedInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResolvedInfo.swift; sourceTree = "<group>"; };
+		2CF1F5992C22B05A00C34047 /* ResolveInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResolveInfo.swift; sourceTree = "<group>"; };
+		2CF1F59B2C22B05A00C34047 /* WIliotCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WIliotCore.swift; sourceTree = "<group>"; };
+		2CF1F59C2C22B05A00C34047 /* WLTLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WLTLocation.swift; sourceTree = "<group>"; };
 		796428758A08449719B9B5BB /* Pods-SampleApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleApp.debug.xcconfig"; path = "Target Support Files/Pods-SampleApp/Pods-SampleApp.debug.xcconfig"; sourceTree = "<group>"; };
+		A3FA1B4FDEF50D8F19C20640 /* Pods-MQTTClient.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MQTTClient.debug.xcconfig"; path = "Target Support Files/Pods-MQTTClient/Pods-MQTTClient.debug.xcconfig"; sourceTree = "<group>"; };
+		A89672E0694067A78C150737 /* Pods-MQTTClient.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MQTTClient.release.xcconfig"; path = "Target Support Files/Pods-MQTTClient/Pods-MQTTClient.release.xcconfig"; sourceTree = "<group>"; };
 		DF1F4F2E21FDEC6FBDA2AF1F /* Pods_SampleApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SampleApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB7FF8573910EBBADF39A006 /* Pods-SampleApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleApp.release.xcconfig"; path = "Target Support Files/Pods-SampleApp/Pods-SampleApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2C1936F42C22BAEA004747C8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C1936FB2C22BAEB004747C8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C1936FF2C22BAEB004747C8 /* BLEUpstream.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C1937552C22BD36004747C8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C8E24132C22BEB400841D14 /* Pods_MQTTClient.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C19375C2C22BD36004747C8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C1937602C22BD36004747C8 /* MQTTClient.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2C8B5B1128D8456900BC45E8 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				930ED3BCAD0DB1A18B18F9FF /* Pods_SampleApp.framework in Frameworks */,
+				2C19376B2C22BD36004747C8 /* MQTTClient.framework in Frameworks */,
+				2C19370A2C22BAEB004747C8 /* BLEUpstream.framework in Frameworks */,
+				2CF1F5842C22B00A00C34047 /* WiliotCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2CF1F56E2C22B00900C34047 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2C1936F82C22BAEA004747C8 /* BLEUpstream */ = {
+			isa = PBXGroup;
+			children = (
+				2C1936F92C22BAEA004747C8 /* BLEUpstream.h */,
+				2C1937122C22BB69004747C8 /* BLEUProtocols.swift */,
+				2C1937132C22BB69004747C8 /* BLEUpstreamService.swift */,
+				2C1937142C22BB69004747C8 /* BLEUServiceConfiguration.swift */,
+				2C1937342C22BB69004747C8 /* Internals */,
+			);
+			path = BLEUpstream;
+			sourceTree = "<group>";
+		};
+		2C1937042C22BAEB004747C8 /* BLEUpstreamTests */ = {
+			isa = PBXGroup;
+			children = (
+				2C1937052C22BAEB004747C8 /* BLEUpstreamTests.swift */,
+			);
+			path = BLEUpstreamTests;
+			sourceTree = "<group>";
+		};
+		2C1937182C22BB69004747C8 /* BLE */ = {
+			isa = PBXGroup;
+			children = (
+				2C1937152C22BB69004747C8 /* BLEAdvertiser.swift */,
+				2C1937162C22BB69004747C8 /* BLEState.swift */,
+				2C1937172C22BB69004747C8 /* BLEUCentralManagerService.swift */,
+			);
+			path = BLE;
+			sourceTree = "<group>";
+		};
+		2C19371A2C22BB69004747C8 /* BridgePayloadParsing */ = {
+			isa = PBXGroup;
+			children = (
+				2C1937192C22BB69004747C8 /* BridgeCommandMessageType.swift */,
+			);
+			path = BridgePayloadParsing;
+			sourceTree = "<group>";
+		};
+		2C1937202C22BB69004747C8 /* Gateway */ = {
+			isa = PBXGroup;
+			children = (
+				2C19371B2C22BB69004747C8 /* BLEUMobileGatewayConfig.swift */,
+				2C19371C2C22BB69004747C8 /* BLEUMobileGatewayService.swift */,
+				2C19371D2C22BB69004747C8 /* BLEUMQTTCLient.swift */,
+				2C19371E2C22BB69004747C8 /* BLEUpstreamEndpoint.swift */,
+				2C19371F2C22BB69004747C8 /* Mocks.swift */,
+			);
+			path = Gateway;
+			sourceTree = "<group>";
+		};
+		2C1937252C22BB69004747C8 /* GatewayPayloadMessages */ = {
+			isa = PBXGroup;
+			children = (
+				2C1937212C22BB69004747C8 /* GatewayCapabilitiesMessage.swift */,
+				2C1937222C22BB69004747C8 /* GatewayDataEncoder.swift */,
+				2C1937232C22BB69004747C8 /* GatewayPacketsData.swift */,
+				2C1937242C22BB69004747C8 /* GatewayTagPacketsLogData.swift */,
+			);
+			path = GatewayPayloadMessages;
+			sourceTree = "<group>";
+		};
+		2C1937342C22BB69004747C8 /* Internals */ = {
+			isa = PBXGroup;
+			children = (
+				2C1937182C22BB69004747C8 /* BLE */,
+				2C19371A2C22BB69004747C8 /* BridgePayloadParsing */,
+				2C1937202C22BB69004747C8 /* Gateway */,
+				2C1937252C22BB69004747C8 /* GatewayPayloadMessages */,
+				2C1937262C22BB69004747C8 /* BeaconDataReader.swift */,
+				2C1937272C22BB69004747C8 /* BLEPacket+Extensions.swift */,
+				2C1937282C22BB69004747C8 /* BLEUPacketsCoupler.swift */,
+				2C1937292C22BB69004747C8 /* BLEUPacketsManager.swift */,
+				2C19372A2C22BB69004747C8 /* BLEUPacketsPacingService.swift */,
+				2C19372B2C22BB69004747C8 /* BLEUPacketsRouter.swift */,
+				2C19372C2C22BB69004747C8 /* BLEUPacketsRouterConfiguration.swift */,
+				2C19372D2C22BB69004747C8 /* BLEUTagPacketsPayloadsLogService.swift */,
+				2C19372E2C22BB69004747C8 /* Data+Extensions.swift */,
+				2C19372F2C22BB69004747C8 /* Globals.swift */,
+				2C1937302C22BB69004747C8 /* Protocols.swift */,
+				2C1937312C22BB69004747C8 /* String+Extensions.swift */,
+				2C1937322C22BB69004747C8 /* TagPacketData.swift */,
+				2C1937332C22BB69004747C8 /* WeakObjectContainer.swift */,
+			);
+			path = Internals;
+			sourceTree = "<group>";
+		};
+		2C1937592C22BD36004747C8 /* MQTTClient */ = {
+			isa = PBXGroup;
+			children = (
+				2C19375A2C22BD36004747C8 /* MQTTClient.h */,
+				2C1937732C22BD70004747C8 /* WiliotMQTTClient.swift */,
+			);
+			path = MQTTClient;
+			sourceTree = "<group>";
+		};
+		2C1937652C22BD36004747C8 /* MQTTClientTests */ = {
+			isa = PBXGroup;
+			children = (
+				2C1937662C22BD36004747C8 /* MQTTClientTests.swift */,
+			);
+			path = MQTTClientTests;
+			sourceTree = "<group>";
+		};
 		2C8B5B0B28D8456900BC45E8 = {
 			isa = PBXGroup;
 			children = (
 				2C8B5B1628D8456900BC45E8 /* SampleApp */,
+				2C1937042C22BAEB004747C8 /* BLEUpstreamTests */,
+				2C1937652C22BD36004747C8 /* MQTTClientTests */,
 				2C8B5B1528D8456900BC45E8 /* Products */,
 				3F3A1D1044EC1AAE1936173B /* Pods */,
 				B944B1F5C854A76F19A98119 /* Frameworks */,
@@ -112,6 +415,11 @@
 			isa = PBXGroup;
 			children = (
 				2C8B5B1428D8456900BC45E8 /* SampleApp.app */,
+				2CF1F5712C22B00900C34047 /* WiliotCore.framework */,
+				2C1936F72C22BAEA004747C8 /* BLEUpstream.framework */,
+				2C1936FE2C22BAEB004747C8 /* BLEUpstreamTests.xctest */,
+				2C1937582C22BD36004747C8 /* MQTTClient.framework */,
+				2C19375F2C22BD36004747C8 /* MQTTClientTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -136,8 +444,6 @@
 			isa = PBXGroup;
 			children = (
 				2C8B5B2E28D84ECC00BC45E8 /* Model.swift */,
-				2CC477DA28D9BFF000355A90 /* DataUpstream */,
-				2CC477DB28D9C01600355A90 /* BLEScanning */,
 				2CC477DD28D9C09B00355A90 /* AdditionalData */,
 				2CC477DC28D9C04500355A90 /* NetwworkAPICalls */,
 				2C8B5B4C28D8612000BC45E8 /* Permissions.swift */,
@@ -149,32 +455,6 @@
 				2C84AE7F2A6038070036F7C4 /* Device.swift */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		2CC477DA28D9BFF000355A90 /* DataUpstream */ = {
-			isa = PBXGroup;
-			children = (
-				2C8B5B3028D84FE900BC45E8 /* MobileGatewayService.swift */,
-				2C8B5B3228D8501800BC45E8 /* MQTTClient.swift */,
-				2C8B5B3A28D85A9100BC45E8 /* TagPacketData.swift */,
-				2C8B5B4028D85B5E00BC45E8 /* GatewayPacketsData.swift */,
-				2C8B5B4128D85B5E00BC45E8 /* GatewayDataEncoder.swift */,
-				2C31501128D8ACF8000A3183 /* PacketsPacingService.swift */,
-				2CEAFDA82A656C6D00667F22 /* SideInfoPacketsManager.swift */,
-				2CEAFDA32A65661B00667F22 /* NearbyBridgesUpdater.swift */,
-			);
-			path = DataUpstream;
-			sourceTree = "<group>";
-		};
-		2CC477DB28D9C01600355A90 /* BLEScanning */ = {
-			isa = PBXGroup;
-			children = (
-				2C8B5B4828D85E8A00BC45E8 /* BLEPacketsManager.swift */,
-				2C8B5B4E28D866CB00BC45E8 /* BLEService.swift */,
-				2C31500728D86BD5000A3183 /* BLEPacket.swift */,
-				2C31500F28D8AC3B000A3183 /* BeaconDataReader.swift */,
-			);
-			path = BLEScanning;
 			sourceTree = "<group>";
 		};
 		2CC477DC28D9C04500355A90 /* NetwworkAPICalls */ = {
@@ -198,11 +478,41 @@
 			path = AdditionalData;
 			sourceTree = "<group>";
 		};
+		2CF1F5722C22B00900C34047 /* WiliotCore */ = {
+			isa = PBXGroup;
+			children = (
+				2CF1F5732C22B00900C34047 /* WiliotCore.h */,
+				2CF1F59B2C22B05A00C34047 /* WIliotCore.swift */,
+				2CF1F5912C22B05A00C34047 /* BLEPacket.swift */,
+				2CF1F5922C22B05A00C34047 /* ClaimableAsset.swift */,
+				2CF1F5932C22B05A00C34047 /* Data+Extensions.swift */,
+				2CF1F5942C22B05A00C34047 /* Date+Extensions.swift */,
+				2CF1F5952C22B05A00C34047 /* Double+Extensions.swift */,
+				2CF1F5962C22B05A00C34047 /* Errors.swift */,
+				2CF1F5972C22B05A00C34047 /* PreferredConnectionType.swift */,
+				2CF1F5982C22B05A00C34047 /* ResolvedInfo.swift */,
+				2CF1F5992C22B05A00C34047 /* ResolveInfo.swift */,
+				2CF1F5902C22B05A00C34047 /* HelperTypes */,
+			);
+			path = WiliotCore;
+			sourceTree = "<group>";
+		};
+		2CF1F5902C22B05A00C34047 /* HelperTypes */ = {
+			isa = PBXGroup;
+			children = (
+				2CF1F59C2C22B05A00C34047 /* WLTLocation.swift */,
+				2CF1F58F2C22B05A00C34047 /* NonEmptyContainers.swift */,
+			);
+			path = HelperTypes;
+			sourceTree = "<group>";
+		};
 		3F3A1D1044EC1AAE1936173B /* Pods */ = {
 			isa = PBXGroup;
 			children = (
 				796428758A08449719B9B5BB /* Pods-SampleApp.debug.xcconfig */,
 				FB7FF8573910EBBADF39A006 /* Pods-SampleApp.release.xcconfig */,
+				A3FA1B4FDEF50D8F19C20640 /* Pods-MQTTClient.debug.xcconfig */,
+				A89672E0694067A78C150737 /* Pods-MQTTClient.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -210,14 +520,120 @@
 		B944B1F5C854A76F19A98119 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2CF1F5722C22B00900C34047 /* WiliotCore */,
+				2C1936F82C22BAEA004747C8 /* BLEUpstream */,
+				2C1937592C22BD36004747C8 /* MQTTClient */,
 				DF1F4F2E21FDEC6FBDA2AF1F /* Pods_SampleApp.framework */,
+				25234B334002A3C811B507A4 /* Pods_MQTTClient.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		2C1936F22C22BAEA004747C8 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C1937072C22BAEB004747C8 /* BLEUpstream.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C1937532C22BD36004747C8 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C1937682C22BD36004747C8 /* MQTTClient.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2CF1F56C2C22B00900C34047 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2CF1F5812C22B00A00C34047 /* WiliotCore.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		2C1936F62C22BAEA004747C8 /* BLEUpstream */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C19370C2C22BAEB004747C8 /* Build configuration list for PBXNativeTarget "BLEUpstream" */;
+			buildPhases = (
+				2C1936F22C22BAEA004747C8 /* Headers */,
+				2C1936F32C22BAEA004747C8 /* Sources */,
+				2C1936F42C22BAEA004747C8 /* Frameworks */,
+				2C1936F52C22BAEA004747C8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BLEUpstream;
+			productName = BLEUpstream;
+			productReference = 2C1936F72C22BAEA004747C8 /* BLEUpstream.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		2C1936FD2C22BAEB004747C8 /* BLEUpstreamTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C19370F2C22BAEB004747C8 /* Build configuration list for PBXNativeTarget "BLEUpstreamTests" */;
+			buildPhases = (
+				2C1936FA2C22BAEB004747C8 /* Sources */,
+				2C1936FB2C22BAEB004747C8 /* Frameworks */,
+				2C1936FC2C22BAEB004747C8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2C1937012C22BAEB004747C8 /* PBXTargetDependency */,
+				2C1937032C22BAEB004747C8 /* PBXTargetDependency */,
+			);
+			name = BLEUpstreamTests;
+			productName = BLEUpstreamTests;
+			productReference = 2C1936FE2C22BAEB004747C8 /* BLEUpstreamTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		2C1937572C22BD36004747C8 /* MQTTClient */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C1937712C22BD36004747C8 /* Build configuration list for PBXNativeTarget "MQTTClient" */;
+			buildPhases = (
+				4C49205629AA2CA520B689DF /* [CP] Check Pods Manifest.lock */,
+				2C1937532C22BD36004747C8 /* Headers */,
+				2C1937542C22BD36004747C8 /* Sources */,
+				2C1937552C22BD36004747C8 /* Frameworks */,
+				2C1937562C22BD36004747C8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MQTTClient;
+			productName = MQTTClient;
+			productReference = 2C1937582C22BD36004747C8 /* MQTTClient.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		2C19375E2C22BD36004747C8 /* MQTTClientTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C1937722C22BD36004747C8 /* Build configuration list for PBXNativeTarget "MQTTClientTests" */;
+			buildPhases = (
+				2C19375B2C22BD36004747C8 /* Sources */,
+				2C19375C2C22BD36004747C8 /* Frameworks */,
+				2C19375D2C22BD36004747C8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2C1937622C22BD36004747C8 /* PBXTargetDependency */,
+				2C1937642C22BD36004747C8 /* PBXTargetDependency */,
+			);
+			name = MQTTClientTests;
+			productName = MQTTClientTests;
+			productReference = 2C19375F2C22BD36004747C8 /* MQTTClientTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		2C8B5B1328D8456900BC45E8 /* SampleApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2C8B5B2828D8456B00BC45E8 /* Build configuration list for PBXNativeTarget "SampleApp" */;
@@ -227,15 +643,37 @@
 				2C8B5B1128D8456900BC45E8 /* Frameworks */,
 				2C8B5B1228D8456900BC45E8 /* Resources */,
 				6DF2B3E32F3894FF0DE5AFB4 /* [CP] Embed Pods Frameworks */,
+				2CF1F5862C22B00A00C34047 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				2CF1F5832C22B00A00C34047 /* PBXTargetDependency */,
+				2C19376A2C22BD36004747C8 /* PBXTargetDependency */,
+				2C1937092C22BAEB004747C8 /* PBXTargetDependency */,
 			);
 			name = SampleApp;
 			productName = SampleApp;
 			productReference = 2C8B5B1428D8456900BC45E8 /* SampleApp.app */;
 			productType = "com.apple.product-type.application";
+		};
+		2CF1F5702C22B00900C34047 /* WiliotCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2CF1F58B2C22B00A00C34047 /* Build configuration list for PBXNativeTarget "WiliotCore" */;
+			buildPhases = (
+				2CF1F56C2C22B00900C34047 /* Headers */,
+				2CF1F56D2C22B00900C34047 /* Sources */,
+				2CF1F56E2C22B00900C34047 /* Frameworks */,
+				2CF1F56F2C22B00900C34047 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WiliotCore;
+			productName = WiliotCore;
+			productReference = 2CF1F5712C22B00900C34047 /* WiliotCore.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
@@ -244,16 +682,36 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1400;
-				LastUpgradeCheck = 1400;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
 				TargetAttributes = {
+					2C1936F62C22BAEA004747C8 = {
+						CreatedOnToolsVersion = 15.4;
+						LastSwiftMigration = 1540;
+					};
+					2C1936FD2C22BAEB004747C8 = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = 2C8B5B1328D8456900BC45E8;
+					};
+					2C1937572C22BD36004747C8 = {
+						CreatedOnToolsVersion = 15.4;
+						LastSwiftMigration = 1540;
+					};
+					2C19375E2C22BD36004747C8 = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = 2C8B5B1328D8456900BC45E8;
+					};
 					2C8B5B1328D8456900BC45E8 = {
 						CreatedOnToolsVersion = 14.0;
+					};
+					2CF1F5702C22B00900C34047 = {
+						CreatedOnToolsVersion = 15.4;
+						LastSwiftMigration = 1540;
 					};
 				};
 			};
 			buildConfigurationList = 2C8B5B0F28D8456900BC45E8 /* Build configuration list for PBXProject "SampleApp" */;
-			compatibilityVersion = "Xcode 13.0";
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -266,11 +724,44 @@
 			projectRoot = "";
 			targets = (
 				2C8B5B1328D8456900BC45E8 /* SampleApp */,
+				2CF1F5702C22B00900C34047 /* WiliotCore */,
+				2C1936F62C22BAEA004747C8 /* BLEUpstream */,
+				2C1936FD2C22BAEB004747C8 /* BLEUpstreamTests */,
+				2C1937572C22BD36004747C8 /* MQTTClient */,
+				2C19375E2C22BD36004747C8 /* MQTTClientTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2C1936F52C22BAEA004747C8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C1936FC2C22BAEB004747C8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C1937562C22BD36004747C8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C19375D2C22BD36004747C8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2C8B5B1228D8456900BC45E8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -282,9 +773,38 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2CF1F56F2C22B00900C34047 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		4C49205629AA2CA520B689DF /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MQTTClient-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		6DF2B3E32F3894FF0DE5AFB4 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -327,32 +847,82 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2C1936F32C22BAEA004747C8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C19374C2C22BB69004747C8 /* BLEUTagPacketsPayloadsLogService.swift in Sources */,
+				2C19373E2C22BB69004747C8 /* BLEUMQTTCLient.swift in Sources */,
+				2C1937462C22BB69004747C8 /* BLEPacket+Extensions.swift in Sources */,
+				2C19374A2C22BB69004747C8 /* BLEUPacketsRouter.swift in Sources */,
+				2C1937412C22BB69004747C8 /* GatewayCapabilitiesMessage.swift in Sources */,
+				2C19374B2C22BB69004747C8 /* BLEUPacketsRouterConfiguration.swift in Sources */,
+				2C19374E2C22BB69004747C8 /* Globals.swift in Sources */,
+				2C19373C2C22BB69004747C8 /* BLEUMobileGatewayConfig.swift in Sources */,
+				2C1937502C22BB69004747C8 /* String+Extensions.swift in Sources */,
+				2C19373F2C22BB69004747C8 /* BLEUpstreamEndpoint.swift in Sources */,
+				2C1937452C22BB69004747C8 /* BeaconDataReader.swift in Sources */,
+				2C19374D2C22BB69004747C8 /* Data+Extensions.swift in Sources */,
+				2C1937362C22BB69004747C8 /* BLEUpstreamService.swift in Sources */,
+				2C19374F2C22BB69004747C8 /* Protocols.swift in Sources */,
+				2C19373B2C22BB69004747C8 /* BridgeCommandMessageType.swift in Sources */,
+				2C19373A2C22BB69004747C8 /* BLEUCentralManagerService.swift in Sources */,
+				2C1937522C22BB69004747C8 /* WeakObjectContainer.swift in Sources */,
+				2C19373D2C22BB69004747C8 /* BLEUMobileGatewayService.swift in Sources */,
+				2C1937472C22BB69004747C8 /* BLEUPacketsCoupler.swift in Sources */,
+				2C1937352C22BB69004747C8 /* BLEUProtocols.swift in Sources */,
+				2C1937512C22BB69004747C8 /* TagPacketData.swift in Sources */,
+				2C1937382C22BB69004747C8 /* BLEAdvertiser.swift in Sources */,
+				2C1937372C22BB69004747C8 /* BLEUServiceConfiguration.swift in Sources */,
+				2C1937432C22BB69004747C8 /* GatewayPacketsData.swift in Sources */,
+				2C1937392C22BB69004747C8 /* BLEState.swift in Sources */,
+				2C1937402C22BB69004747C8 /* Mocks.swift in Sources */,
+				2C1937492C22BB69004747C8 /* BLEUPacketsPacingService.swift in Sources */,
+				2C1937482C22BB69004747C8 /* BLEUPacketsManager.swift in Sources */,
+				2C1937442C22BB69004747C8 /* GatewayTagPacketsLogData.swift in Sources */,
+				2C1937422C22BB69004747C8 /* GatewayDataEncoder.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C1936FA2C22BAEB004747C8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C1937062C22BAEB004747C8 /* BLEUpstreamTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C1937542C22BD36004747C8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C1937742C22BD70004747C8 /* WiliotMQTTClient.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C19375B2C22BD36004747C8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C1937672C22BD36004747C8 /* MQTTClientTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2C8B5B1028D8456900BC45E8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C8B5B3328D8501800BC45E8 /* MQTTClient.swift in Sources */,
 				2C8B5B3D28D85A9100BC45E8 /* Location.swift in Sources */,
 				2C31501428D8AD15000A3183 /* WeakObject.swift in Sources */,
 				2C8B5B3728D8531400BC45E8 /* NetworkProtocols.swift in Sources */,
 				2C31500C28D89E88000A3183 /* LocationService.swift in Sources */,
 				2C1862BB2A60587A008D0AE6 /* DataTaskResponse.swift in Sources */,
-				2C8B5B3128D84FE900BC45E8 /* MobileGatewayService.swift in Sources */,
-				2C8B5B4228D85B5E00BC45E8 /* GatewayPacketsData.swift in Sources */,
 				2C8B5B3F28D85B3100BC45E8 /* Errors.swift in Sources */,
-				2C31501228D8ACF8000A3183 /* PacketsPacingService.swift in Sources */,
 				2C8B5B1C28D8456900BC45E8 /* MainViewController.swift in Sources */,
-				2CEAFDA92A656C6D00667F22 /* SideInfoPacketsManager.swift in Sources */,
-				2C8B5B3C28D85A9100BC45E8 /* TagPacketData.swift in Sources */,
-				2C31501028D8AC3B000A3183 /* BeaconDataReader.swift in Sources */,
 				2C84AE822A6049000036F7C4 /* LocationSource.swift in Sources */,
 				2C31500E28D89EF0000A3183 /* iBeacon.swift in Sources */,
-				2C31500828D86BD5000A3183 /* BLEPacket.swift in Sources */,
-				2C8B5B4928D85E8A00BC45E8 /* BLEPacketsManager.swift in Sources */,
 				2C8B5B1828D8456900BC45E8 /* AppDelegate.swift in Sources */,
-				2C8B5B4F28D866CB00BC45E8 /* BLEService.swift in Sources */,
 				2C8B5B4728D85BDC00BC45E8 /* Date+Extensions.swift in Sources */,
-				2CEAFDA42A65661B00667F22 /* NearbyBridgesUpdater.swift in Sources */,
 				2C84AE802A6038070036F7C4 /* Device.swift in Sources */,
 				2C8B5B4D28D8612000BC45E8 /* Permissions.swift in Sources */,
 				2C8B5B1A28D8456900BC45E8 /* SceneDelegate.swift in Sources */,
@@ -360,11 +930,67 @@
 				2C8B5B2F28D84ECC00BC45E8 /* Model.swift in Sources */,
 				2C31500A28D86C7A000A3183 /* Data+Extension.swift in Sources */,
 				2C8B5B3528D852D900BC45E8 /* NetworkService.swift in Sources */,
-				2C8B5B4328D85B5E00BC45E8 /* GatewayDataEncoder.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2CF1F56D2C22B00900C34047 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2CF1F5A52C22B05B00C34047 /* PreferredConnectionType.swift in Sources */,
+				2CF1F5A02C22B05B00C34047 /* ClaimableAsset.swift in Sources */,
+				2CF1F5A72C22B05B00C34047 /* ResolveInfo.swift in Sources */,
+				2CF1F5A62C22B05B00C34047 /* ResolvedInfo.swift in Sources */,
+				2CF1F5A32C22B05B00C34047 /* Double+Extensions.swift in Sources */,
+				2CF1F59E2C22B05B00C34047 /* NonEmptyContainers.swift in Sources */,
+				2CF1F5A42C22B05B00C34047 /* Errors.swift in Sources */,
+				2CF1F5A92C22B05B00C34047 /* WIliotCore.swift in Sources */,
+				2CF1F59F2C22B05B00C34047 /* BLEPacket.swift in Sources */,
+				2CF1F5A12C22B05B00C34047 /* Data+Extensions.swift in Sources */,
+				2CF1F5AA2C22B05B00C34047 /* WLTLocation.swift in Sources */,
+				2CF1F5A22C22B05B00C34047 /* Date+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2C1937012C22BAEB004747C8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2C1936F62C22BAEA004747C8 /* BLEUpstream */;
+			targetProxy = 2C1937002C22BAEB004747C8 /* PBXContainerItemProxy */;
+		};
+		2C1937032C22BAEB004747C8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2C8B5B1328D8456900BC45E8 /* SampleApp */;
+			targetProxy = 2C1937022C22BAEB004747C8 /* PBXContainerItemProxy */;
+		};
+		2C1937092C22BAEB004747C8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2C1936F62C22BAEA004747C8 /* BLEUpstream */;
+			targetProxy = 2C1937082C22BAEB004747C8 /* PBXContainerItemProxy */;
+		};
+		2C1937622C22BD36004747C8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2C1937572C22BD36004747C8 /* MQTTClient */;
+			targetProxy = 2C1937612C22BD36004747C8 /* PBXContainerItemProxy */;
+		};
+		2C1937642C22BD36004747C8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2C8B5B1328D8456900BC45E8 /* SampleApp */;
+			targetProxy = 2C1937632C22BD36004747C8 /* PBXContainerItemProxy */;
+		};
+		2C19376A2C22BD36004747C8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2C1937572C22BD36004747C8 /* MQTTClient */;
+			targetProxy = 2C1937692C22BD36004747C8 /* PBXContainerItemProxy */;
+		};
+		2CF1F5832C22B00A00C34047 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2CF1F5702C22B00900C34047 /* WiliotCore */;
+			targetProxy = 2CF1F5822C22B00A00C34047 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		2C8B5B1D28D8456900BC45E8 /* Main.storyboard */ = {
@@ -386,10 +1012,271 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		2C19370D2C22BAEB004747C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 729D4CP2WY;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.wiliot.wiliotapp.assetTemplate.Verification.BLEUpstream;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		2C19370E2C22BAEB004747C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 729D4CP2WY;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.wiliot.wiliotapp.assetTemplate.Verification.BLEUpstream;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		2C1937102C22BAEB004747C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 729D4CP2WY;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wiliot.wiliotapp.assetTemplate.Verification.BLEUpstreamTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SampleApp";
+			};
+			name = Debug;
+		};
+		2C1937112C22BAEB004747C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 729D4CP2WY;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wiliot.wiliotapp.assetTemplate.Verification.BLEUpstreamTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SampleApp";
+			};
+			name = Release;
+		};
+		2C19376D2C22BD36004747C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A3FA1B4FDEF50D8F19C20640 /* Pods-MQTTClient.debug.xcconfig */;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 729D4CP2WY;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.wiliot.wiliotapp.assetTemplate.Verification.MQTTClient;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		2C19376E2C22BD36004747C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A89672E0694067A78C150737 /* Pods-MQTTClient.release.xcconfig */;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 729D4CP2WY;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.wiliot.wiliotapp.assetTemplate.Verification.MQTTClient;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		2C19376F2C22BD36004747C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 729D4CP2WY;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wiliot.wiliotapp.assetTemplate.Verification.MQTTClientTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SampleApp";
+			};
+			name = Debug;
+		};
+		2C1937702C22BD36004747C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 729D4CP2WY;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wiliot.wiliotapp.assetTemplate.Verification.MQTTClientTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SampleApp";
+			};
+			name = Release;
+		};
 		2C8B5B2628D8456B00BC45E8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -450,6 +1337,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -504,6 +1392,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 796428758A08449719B9B5BB /* Pods-SampleApp.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -519,12 +1408,12 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wiliot.SampleApp.SampleApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -538,6 +1427,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FB7FF8573910EBBADF39A006 /* Pods-SampleApp.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -553,12 +1443,12 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wiliot.SampleApp.SampleApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -568,9 +1458,147 @@
 			};
 			name = Release;
 		};
+		2CF1F5872C22B00A00C34047 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 729D4CP2WY;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = "$(CLANG_MODULES_ENABLE_VERIFIER_TOOL)";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.wiliot.wiliotapp.assetTemplate.Verification.WiliotCore;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		2CF1F5882C22B00A00C34047 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 729D4CP2WY;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = "$(CLANG_MODULES_ENABLE_VERIFIER_TOOL)";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.wiliot.wiliotapp.assetTemplate.Verification.WiliotCore;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2C19370C2C22BAEB004747C8 /* Build configuration list for PBXNativeTarget "BLEUpstream" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C19370D2C22BAEB004747C8 /* Debug */,
+				2C19370E2C22BAEB004747C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2C19370F2C22BAEB004747C8 /* Build configuration list for PBXNativeTarget "BLEUpstreamTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C1937102C22BAEB004747C8 /* Debug */,
+				2C1937112C22BAEB004747C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2C1937712C22BD36004747C8 /* Build configuration list for PBXNativeTarget "MQTTClient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C19376D2C22BD36004747C8 /* Debug */,
+				2C19376E2C22BD36004747C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2C1937722C22BD36004747C8 /* Build configuration list for PBXNativeTarget "MQTTClientTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C19376F2C22BD36004747C8 /* Debug */,
+				2C1937702C22BD36004747C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2C8B5B0F28D8456900BC45E8 /* Build configuration list for PBXProject "SampleApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -585,6 +1613,15 @@
 			buildConfigurations = (
 				2C8B5B2928D8456B00BC45E8 /* Debug */,
 				2C8B5B2A28D8456B00BC45E8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2CF1F58B2C22B00A00C34047 /* Build configuration list for PBXNativeTarget "WiliotCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2CF1F5872C22B00A00C34047 /* Debug */,
+				2CF1F5882C22B00A00C34047 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

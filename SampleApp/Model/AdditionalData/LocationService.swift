@@ -23,6 +23,13 @@ class LocationService {
 
 }
 
+import BLEUpstream
+extension LocationService: LocationCoordinatesContainer {
+    var currentLocationCoordinates:CLLocationCoordinate2D? {
+        lastLocation?.coordinate ?? currentLocation?.coordinate // still it cam be nil
+    }
+}
+
 extension LocationService {
     
     var currentLocation:CLLocation? {
